@@ -81,6 +81,7 @@
 
 import { mapState } from 'vuex'
 import axios from 'axios'
+//import router from '../router'
 
 
 export default {
@@ -149,7 +150,8 @@ export default {
                     })
              .then(function(){
                 self.getUserInfo()
-                self.redirection()
+                console.log("Self.GetUsetInfos")
+                //self.redirection()
             })
             .catch(function(error){
                 console.log(error)
@@ -171,7 +173,9 @@ export default {
                     })
              .then(function(){
                 self.getUserInfo()
-                self.redirection()
+                console.log("USER INFOS ")
+               // self.redirection()
+                console.log("Redirection")
             })
             .catch(function(error){
                 console.log(error)
@@ -199,8 +203,16 @@ export default {
         },
 
         // redirection : function() {
-        //       console.log("ID POUR PARAMS", this.$store.state.userProfil.id)
-        //        this.$router.push({name: 'Profil'}, { params : { id : this.$store.state.userProfil.id}})
+        //     if(this.$store.state.token !== ""){
+        //         try {
+        //             router.push({name: 'Profil'}, { params : { id : this.$store.state.userProfil.id}})
+        //             console.log("ID", this.$store.state.userProfil.id)
+        //         } catch (error) {
+        //             console.log("error du catch REDIRECTION", error)
+        //             }
+        //     }else{
+        //         throw "Vous n'etes pas connecté et/ou autorisés"
+        //     }       
         // },
        
         switchEye : function(){

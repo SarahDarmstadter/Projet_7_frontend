@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state : function() {
     return {
     status : "",
-    identification : "",
+    token : "",
     userProfil : {
       lastName : "",
       firstName:  "",
@@ -27,10 +27,12 @@ export default new Vuex.Store({
     identification : function(state, token) {
       localStorage.setItem('token', JSON.stringify(token))
       state.token = token
+      console.log("state.token", state.token)
     }, 
 
     userProfil : function(state, userProfil) {
       state.userProfil = userProfil
+      console.log("state.userprofil", state.userProfil)
     }
   },
  

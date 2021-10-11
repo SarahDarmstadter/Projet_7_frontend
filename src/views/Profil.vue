@@ -98,7 +98,7 @@ export default {
     },
 
     beforeCreate() {
-        
+        this.$store.dispatch("getUserProfil")
     },
     
     computed : {
