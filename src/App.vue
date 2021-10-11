@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div id="home"> </div>
+    <div id="connexion"> </div>
     <div id ="profil"></div>
    
     

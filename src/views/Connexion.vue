@@ -65,8 +65,8 @@
             </div> 
             <p class="format_password" v-if= "mode =='create'">Votre mot de passe doit contenir entre 8 et 15 caractères, au moins une majuscule et un caractère spécial.</p>
             <div class="form-row" v-if= "mode== 'login' && status== 'error_login'"> Adresse mail et/ou mot de passe invalide</div>   
-            <button @click="connexion()" type="submit" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
-            <button @click="createAccount()" type="submit" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
+            <button @click="connexion()" type="button" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
+            <button @click="createAccount()" type="button" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
         </form>
         </div>
         </div>
@@ -98,7 +98,6 @@ export default {
         }
     },
     computed : {
-
         validPassword : function (){
             const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,15})$/gm;
             if ( this.mode =='create' && this.password.match(regex) ) {
@@ -108,21 +107,18 @@ export default {
             }
         },
         emptyFields : function() {
-            if ( this.mode =='login' && this.password != "" && this.email != "" ) {
-                return true;
-            } else {
-                return false
-            }
-
+                if ( this.mode =='login' && this.password != "" && this.email != "" ) {
+                    return true;
+                } else {
+                    return false
+                }
         },
-
         ...mapState(["status", "token"]),
-
     },
     methods : {
         dropdown : function(){
-          const drop = document.getElementById("dropdown");
-          drop.classList.toggle("visible");
+            const drop = document.getElementById("dropdown");
+            drop.classList.toggle("visible");
         },
         
         switchToLogin : function (){
@@ -143,14 +139,14 @@ export default {
                 })  
                 .then(function(response) {
                     console.log("RESPONSE AXIOS POST SIGNUP", response.data)
-                    self.$store.dispatch('identification', response.data.token)
+                    self.$store.dispatch('token', response.data.token)
                 })
                 .catch(function(error){
-                        console.log(error)
-                    })
-             .then(function(){
+                    console.log(error)
+                })
+            .then(function(){
                 self.getUserInfo()
-                console.log("Self.GetUsetInfos")
+                console.log("Self.GetUsetInfos", self.$store.state.userProfil)
                 //self.redirection()
             })
             .catch(function(error){
@@ -159,61 +155,52 @@ export default {
         },
 
         connexion : function(){
-            const self = this;
+           const self = this;
                 axios.post('http://localhost:3000/api/auth/login', {
                     email : this.email,
                     password : this.password
                 })  
                 .then(function(response) {
                     console.log("RESPONSE AXIOS POST LOGIN", response.data )
-                    self.$store.dispatch('identification', response.data.token)
+                    self.$store.dispatch('token', response.data.token)
+                    self.$store.dispatch("userId", response.data.userId)
                 })
                 .catch(function(error){
                     console.log(error)
-                    })
-             .then(function(){
-                self.getUserInfo()
-                console.log("USER INFOS ")
-               // self.redirection()
-                console.log("Redirection")
+                })
+            .then(function(){
+                self.redirection();
             })
             .catch(function(error){
                 console.log(error)
             }) 
         },
 
-        getUserInfo : function () {
+        redirection : function() {
             const self = this;
             if(this.$store.state.token !== ""){
-                try {
-                    axios.get('http://localhost:3000/api/auth/profil', 
-                    {headers : {'Authorization' : `Bearer ${this.$store.state.token}`}})
+                axios.get('http://localhost:3000/api/auth/profil', 
+                {headers : {'Authorization' : `Bearer ${this.$store.state.token}`}})
                     .then(function(response){
                         console.log("Response axios.get", response.data.data)
                         self.$store.dispatch("getUserProfil", response.data.data)
-                    }).catch(function(error){
-                        console.log(error)
                     })
-                } catch (error) {
-                    console.log("error du catch", error)
-                    }
-            }else{
-                throw "Vous n'etes pas connecté et/ou autorisés"
-            }
-        },
-
-        // redirection : function() {
-        //     if(this.$store.state.token !== ""){
-        //         try {
-        //             router.push({name: 'Profil'}, { params : { id : this.$store.state.userProfil.id}})
-        //             console.log("ID", this.$store.state.userProfil.id)
-        //         } catch (error) {
-        //             console.log("error du catch REDIRECTION", error)
-        //             }
-        //     }else{
-        //         throw "Vous n'etes pas connecté et/ou autorisés"
-        //     }       
-        // },
+                    .catch(function(error){
+                        console.log(error)                        
+                    })
+            .then(function(){
+                let userId =  self.$store.state.userId
+                console.log("userId redirection", userId)
+                self.$router.push({path : `/profil/:${userId}`})
+            })
+            .catch(function(error){
+                console.log(error)
+            })
+                
+                }else{
+                    throw "Vous n'etes pas connecté et/ou autorisés"
+                }
+         },
        
         switchEye : function(){
             const passwordInput = document.getElementById("password");

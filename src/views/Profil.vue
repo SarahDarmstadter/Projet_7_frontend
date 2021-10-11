@@ -32,7 +32,7 @@
         <p class="userid">{{id }}</p>
         <div class="image-profile">
         <img :src="file" alt="photo de profil" class="img-thumbnail img-fluid rounded-circle" style ="width : 50%" >
-            <button @click="showUpload" class="camera" :ref="camera">
+            <button @click="showUpload" class="camera" >
                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16">
                     <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                     <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/>
@@ -40,7 +40,7 @@
             </button>
         </div>
         <div class="unvisible show-upload" id="show-upload">
-                <input @change="selectFile" type="file" ref="camera" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
+                <input @change="selectFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
                 <button id="boutonImage" class="btn-profil" @click="uploadImage()"> upload image </button>
         </div>
         <div class="infos">
@@ -85,22 +85,23 @@ export default {
     props : ['id'],
     data () {
         return {
-            userId: this.$store.state.userProfil.id,
-            lastName : this.$store.state.userProfil.lastName,
-            firstName : this.$store.state.userProfil.firstName,
-            userName: this.$store.state.userProfil.userName,
-            email :this.$store.state.userProfil.email,
-            file : this.$store.state.userProfil.imageUser,
-            password : "*********",
-            newFile : null,
-            newImage : ""
+                userId : "",
+                lastName : "",
+                firstName :"",
+                userName :"",
+                email : "",
+                file : "",
             }      
     },
 
-    beforeCreate() {
-        this.$store.dispatch("getUserProfil")
+    mounted (){
+                this.userId = this.$store.state.userId,
+                this.lastName  = this.$store.state.userProfil.lastName,
+                this.firstName = this.$store.state.userProfil.firstName,
+                this.userName =this.$store.state.userProfil.userName,
+                this.email =this.$store.state.userProfil.email,
+                this.file = this.$store.state.userProfil.imageUser
     },
-    
     computed : {
         ...mapState(['userProfil', 'token'])
     }, 
@@ -164,7 +165,7 @@ export default {
                     }
                 })
                 .then(function() {
-                    self.$store.dispatch('getUserProfil')
+                    self.$store.dispatch('getUserProfil', this.newFile)
                 })
                 .catch(function(error){
                     console.log(error)

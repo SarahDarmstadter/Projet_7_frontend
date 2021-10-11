@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Profil from '../views/Profil.vue'
+import Connexion from '../views/Connexion.vue'
+//import Profil from '../views/Profil.vue'
 import post from '../components/post.vue'
 
 Vue.use(VueRouter)
@@ -9,18 +9,18 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Connexion',
+    component: Connexion
   },
   {
 path: '/profil/:id',
  name: 'Profil',
   props: true,
-component: Profil
+//component: Profil,
 //   // //   // route level code-splitting
 //   // //   // this generates a separate chunk (about.[hash].js) for this route
 //   // //   // which is lazy-loaded when the route is visited.
-//   // ///component: () => import(/* webpackChunkName: "about" */ '../views/Profil.vue')
+component: () => import('../views/Profil.vue')
 },
   {
     path: '/post',
