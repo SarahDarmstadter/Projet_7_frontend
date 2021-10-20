@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Connexion from '../views/Connexion.vue'
-//import Profil from '../views/Profil.vue'
-import post from '../components/post.vue'
-
+import Profil from '../views/Profil.vue'
+import Forum from '../views/Forum.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -13,25 +12,17 @@ const routes = [
     component: Connexion
   },
   {
-path: '/profil/:id',
- name: 'Profil',
-  props: true,
-//component: Profil,
-//   // //   // route level code-splitting
-//   // //   // this generates a separate chunk (about.[hash].js) for this route
-//   // //   // which is lazy-loaded when the route is visited.
-component: () => import('../views/Profil.vue')
+    path: '/profil/:id',
+    name: 'Profil',
+    props: true,
+    component: Profil,
 },
-  {
-    path: '/post',
-    name: 'post',
+{
+    path: '/forum',
+    name: 'Forum',
     //props: true,
-    component: post
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    //component: () => import(/* webpackChunkName: "about" */ '../views/Profil.vue')
-  }
+    component: Forum,
+}
   
 ]
 

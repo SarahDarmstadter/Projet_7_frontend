@@ -13,6 +13,7 @@ Vue.use(BootstrapVueIcons);
 Vue.use(fontAwesome);
 Vue.config.productionTip = false;
 
+
 new Vue({
   router,
   store,

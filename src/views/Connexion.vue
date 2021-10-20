@@ -140,14 +140,14 @@ export default {
                 .then(function(response) {
                     console.log("RESPONSE AXIOS POST SIGNUP", response.data)
                     self.$store.dispatch('token', response.data.token)
+                    self.$store.dispatch("userId", response.data.userId)
+                    self.$store.dispatch('identifiant', response.data.userId)
                 })
                 .catch(function(error){
                     console.log(error)
                 })
             .then(function(){
-                self.getUserInfo()
-                console.log("Self.GetUsetInfos", self.$store.state.userProfil)
-                //self.redirection()
+                self.redirection()
             })
             .catch(function(error){
                 console.log(error)
@@ -164,6 +164,7 @@ export default {
                     console.log("RESPONSE AXIOS POST LOGIN", response.data )
                     self.$store.dispatch('token', response.data.token)
                     self.$store.dispatch("userId", response.data.userId)
+                    self.$store.dispatch('identifiant', response.data.userId)
                 })
                 .catch(function(error){
                     console.log(error)
@@ -179,25 +180,10 @@ export default {
         redirection : function() {
             const self = this;
             if(this.$store.state.token !== ""){
-                axios.get('http://localhost:3000/api/auth/profil', 
-                {headers : {'Authorization' : `Bearer ${this.$store.state.token}`}})
-                    .then(function(response){
-                        console.log("Response axios.get", response.data.data)
-                        self.$store.dispatch("getUserProfil", response.data.data)
-                    })
-                    .catch(function(error){
-                        console.log(error)                        
-                    })
-            .then(function(){
-                let userId =  self.$store.state.userId
-                console.log("userId redirection", userId)
-                self.$router.push({path : `/profil/:${userId}`})
-            })
-            .catch(function(error){
-                console.log(error)
-            })
-                
-                }else{
+                let identifiant =  self.$store.state.identifiant
+                self.$router.push({path : `/profil/${identifiant}`})
+        
+           }else{
                     throw "Vous n'etes pas connecté et/ou autorisés"
                 }
          },

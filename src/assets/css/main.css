@@ -4,6 +4,10 @@
   
   /*MISE EN FORME HEADER DE CONNEXION*/
 
+
+
+
+
 h1
 {
   font-size: 1.5rem;
@@ -16,7 +20,7 @@ h1
 
 .logo 
 {
-    width: 100%;
+    width: 90%;
     margin-left: 5%;
 }
 
@@ -89,7 +93,25 @@ h1
   text-decoration: none;
 }
 
+::placeholder {
+
+  padding-left: 2%;
+  font-size: 0.85em
+}
+
+.button:focus
+{
+  border-color: #9ea3aa;
+  outline: 0;
+  box-shadow: 0 0 0 0.1rem #9ea3aa;
+}
+
+.navbar-toggler:focus
+{
+  box-shadow: 0 0 0 0.1rem red;
+}
  
+
 
   /* MISE EN FORME DU FORMULAIRE DE CONNEXION */
   
@@ -106,6 +128,16 @@ h1
     color: red;
     font-weight: bold;
   }
+
+  .form-control:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: #9ea3aa;
+    outline: 0;
+    box-shadow: 0 0 0 0.1rem #9ea3aa;
+
+  }
+  
   
  
   

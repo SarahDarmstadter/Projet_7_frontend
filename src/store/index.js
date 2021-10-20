@@ -1,7 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createPersistedState from 'vuex-persistedstate'
+
 
 Vue.use(Vuex);
+
+// let token = localStorage.getItem(token)
+// if (token) {
+//     token = JSON.parse(localStorage.getItem(token))
+// }else { token = "" } 
 
 export default new Vuex.Store({
   
@@ -10,16 +17,15 @@ export default new Vuex.Store({
             status : "",
             token : "",
             userId:"",
-            userProfil : {
-                lastName : "",
-                firstName:  "",
-                userName:  "",
-                email:  "",
-                imageUser:"",
-                password:  "",
-            }
+            isAdmin : false,
+            identifiant:"",
+            postId:"", 
+            logOut: false
         }
     },
+    plugins: [createPersistedState({
+        storage: window.sessionStorage,
+    })],
     // getters: {
     //     userInfoProfil: state => {
     //         return {
@@ -36,7 +42,6 @@ export default new Vuex.Store({
         setStatus : function(state, status) {
             state.status = status
         },
-
         token : function(state, token) {
             localStorage.setItem('token', JSON.stringify(token))
             state.token = token
@@ -45,10 +50,14 @@ export default new Vuex.Store({
         userId : function(state, userId) {
             state.userId = userId
         },
-
-        userProfil : function(state, userProfil) {
-            state.userProfil = userProfil
-            console.log("state.userprofil", state.userProfil)
+        isAdmin : function(state){
+            state.isAdmin = true
+        },
+        identifiant : function(state, identifiant){
+            state.identifiant = identifiant
+        }, 
+        logOut : function(state){
+            state.logOut = true
         }
   },
     actions: {
@@ -58,11 +67,16 @@ export default new Vuex.Store({
         },
         userId : function({commit}, userId) {
             commit("userId", userId)
-
         },
-        getUserProfil : function ({commit}, userProfil) {
-            commit("userProfil", userProfil)
-            console.log("userprofil", userProfil)
-        }
+        logOut : function(){
+            sessionStorage.clear();
+            localStorage.clear();
+        }, 
+        isAdmin : function({commit}){
+            commit("isAdmin", true)
+        },
+        identifiant : function({commit},identifiant){
+            commit("identifiant", identifiant)
+        } 
     }
 })
