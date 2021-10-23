@@ -133,6 +133,12 @@ export default {
                     .catch(function(error){
                         console.log(error)
                     })
+                .then(function(){
+                    self.$emit("create-post", true)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })
             }else if (this.title!=="" && this.message !==""){
                 const postMessage = {
                     title : this.title,
@@ -151,11 +157,18 @@ export default {
                     .catch(function(error){
                         console.log(error)
                     })
+                .then(function(){
+                    self.$emit("create-post", true)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })
             } else {
                 throw "Veuillez remplir les champs"
             } 
         },
         myProfil : function(){
+            this.$store.dispatch('identifiant', this.$store.state.userId )
              this.$router.push({path : `/profil/${this.$store.state.userId}`})
         },
         logOut : function(){
@@ -205,7 +218,6 @@ export default {
     .profil-titre button
     {
         border-radius: 34px;
-        background: rgba(0, 0, 0, 0.1);
         border: none;
         width: 100%;
         height: 30px;

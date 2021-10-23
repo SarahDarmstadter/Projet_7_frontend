@@ -53,7 +53,7 @@
             </div>
             <div class="form-group">
                 <input v-model="email" type="email" class="form-control" placeholder="email" required />
-                <p class="form-row" v-if= "mode== 'create' && status== 'error_creation'"> Adresse mail déjà utilisée </p>   
+                <p class="form-row" v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
             </div>
             <div class="form-group form-group--password">  
             <b-input v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" 
@@ -64,7 +64,7 @@
                 </div>
             </div> 
             <p class="format_password" v-if= "mode =='create'">Votre mot de passe doit contenir entre 8 et 15 caractères, au moins une majuscule et un caractère spécial.</p>
-            <div class="form-row" v-if= "mode== 'login' && status== 'error_login'"> Adresse mail et/ou mot de passe invalide</div>   
+            <div class="form-row" v-if= "mode== 'login' && status== 'erreur_login'"> Adresse mail et/ou mot de passe invalide</div>   
             <button @click="connexion()" type="button" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
             <button @click="createAccount()" type="button" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
         </form>
@@ -142,12 +142,20 @@ export default {
                     self.$store.dispatch('token', response.data.token)
                     self.$store.dispatch("userId", response.data.userId)
                     self.$store.dispatch('identifiant', response.data.userId)
-                })
+                    self.$store.dispatch("setStatus", "")
+
+                    })
                 .catch(function(error){
                     console.log(error)
+                    self.$store.dispatch("setStatus", "erreur_creation")
                 })
             .then(function(){
-                self.redirection()
+                if(self.$store.state.status !== ""){
+                    self.redirectionCreation()
+                } else {
+                    self.$store.dispatch("setStatus", "")
+                }
+                
             })
             .catch(function(error){
                 console.log(error)
@@ -165,23 +173,36 @@ export default {
                     self.$store.dispatch('token', response.data.token)
                     self.$store.dispatch("userId", response.data.userId)
                     self.$store.dispatch('identifiant', response.data.userId)
+                    self.$store.dispatch("setStatus", "")
                 })
                 .catch(function(error){
                     console.log(error)
+                    self.$store.dispatch("setStatus", "erreur_login")
+                    console.log('STATUS : ', self.$store.state.status)
+
                 })
             .then(function(){
-                self.redirection();
+                 if(self.$store.state.status !== "erreur_login"){
+                    self.redirectionConnexion()
+                }
             })
             .catch(function(error){
                 console.log(error)
             }) 
         },
 
-        redirection : function() {
-            const self = this;
+        redirectionConnexion : function() {
             if(this.$store.state.token !== ""){
-                let identifiant =  self.$store.state.identifiant
-                self.$router.push({path : `/profil/${identifiant}`})
+                this.$router.push({path : `/forum`})
+        
+           }else{
+                    throw "Vous n'etes pas connecté et/ou autorisés"
+                }
+         },
+         redirectionCreation : function() {
+            if(this.$store.state.token !==""){
+                let identifiant =  this.$store.state.identifiant
+                this.$router.push({path : `/profil/${identifiant}`})
         
            }else{
                     throw "Vous n'etes pas connecté et/ou autorisés"

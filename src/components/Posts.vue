@@ -8,11 +8,11 @@
                                 <div class="auteur">
                                     <img :src="user.imageUser" alt="photo de profil de l'auteur" class="auteur--img img-thumbnail img-fluid rounded-circle" style ="width: 50px">
                                     <div class="aside">
-                                       <p @click="goProfil(user.userId)" class="auteur--userName">{{ user.userName }} </p>
+                                       <p @click="goProfil(user.id)" class="auteur--userName">{{ user.userName }} </p>
                                         <p class="date">Publié le {{ createdAt.slice(0,10).split('-').reverse().join('.') + ' à ' + createdAt.slice(11,16)}} </p>
                                     </div>
                                 </div>
-                                <div @click="showActions()" class="dots">
+                                <div  v-if="user.id == userId || isAdmin == true" @click="showActions()" class="dots">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
                                         <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
                                     </svg>
@@ -36,7 +36,7 @@
                                     <button @click="showUp()" class="btn-profil btn-image btn-modifier" >Image</button>
                                     <div class="unvisible show-up" id="show-up">
                                             <input @change="selectFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
-                                            <button id="boutonImage" class="btn-profil btn-modifier btn-publier btn-danger" @click="updatePayloadPost(id)">Modifier</button>
+                                            <button id="bouton_image" class="btn-profil btn-modifier btn-publier btn-danger" @click="updatePayloadPost(id)">Modifier</button>
                                     </div>
                                 </div>
                             </div>
@@ -44,28 +44,32 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex flex-row icons d-flex align-items-center"> <i class="fa fa-heart"></i> <i class="fa fa-smile-o ml-2"></i> </div>
                                     <div class="d-flex flex-row muted-color comm_section">
-                                       <p @click="readPostComments(id)" v-if ="comments.length >1" class="commentaires" id="commentaires"> {{ comments.length }} Commentaires </p>
-                                        <p @click="readPostComments(id)" v-else-if ="comments.length = 1" class="commentaires" id="commentaires"> {{ comments.length }} Commentaire </p>
-                                        <p @click="readPostComments(id)" v-else class="commentaires" id="commentaires"> Commenter </p> 
+                                       <p @click="displayComs(id)" v-if ="comments.length >1" class="commentaires" id="commentaires"> {{ comments.length }} Commentaires </p>
+                                        <p @click="displayComs(id)" v-else-if =" 1> comments.length < 1 " class="commentaires" id="commentaires"> 1 Commentaire </p>
+                                        <p @click="displayComs(id)" v-else class="commentaires" id="commentaires"> Commenter </p> 
                                     </div>
                                 </div>
-                                <div class="comments unvisible" :id="identifiantPost(id)+'_comment-composant'" >
-                                    <commentaires v-for="postComment in postComments" :key="postComment.id" v-bind="postComment" />
-                                </div>  
-                                <div class="create_com unvisible" :id="identifiantPost(id)+'_create-com'">
-                                    <input v-model="commentaireContent"  v-on:keyup.enter="createComment(id)" type="text" class="form-control" placeholder="Ecrivez votre commentaire..." />
-                                    <div class="uploads" @click="showUpload()"><i class="fa fa-camera fonts"></i></div>
-                                    <div class="unvisible show-upload" :id="identifiantPost(id)+'_showUpload'">
-                                    <input @change="selectedFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
-                                    <button id="boutonImage" class="btn-profil" @click="createComment(id)"> Publier</button>
-                                    </div>    
+                                <div class="unvisible" :id="identifiantPost(id)+'_tous_les_coms'" style="border: solid 1px red">
+                                    <div class="comments" :id="identifiantPost(id)+'_comment-composant'" style="border: solid 2px green" >
+                                        <commentaires :postId="identifiantPost(id)" 
+                                        v-for="postComment in postComments"
+                                        :key="postComment.id"
+                                        v-bind="postComment"
+                                        @delete-com="readPostComments"
+                                        />
+                                    </div> 
+                                   <div class="createC">
+                                        <create-commentaire 
+                                        :id="identifiantPost(id)"
+                                        @create-comm="readPostComments"/>
+                                    </div>  
                                 </div> 
+                                    </div>
+                        </div>
+                                </div>
                             </div>
-                         </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-    </div>    
 </template>
 
 <script>
@@ -73,15 +77,15 @@
 import axios from 'axios'
 import { mapState} from 'vuex'
 import Commentaires from './Commentaires.vue'
-//import createCommentaire from './createCommentaire.vue'
+import createCommentaire from './createCommentaire.vue'
 
 
 
 export default {
     name: "Post", 
     components : {
-         Commentaires,
-         //createCommentaire
+        Commentaires,
+        createCommentaire
     },
     props : {
         id : {
@@ -102,6 +106,7 @@ export default {
         comments : {
             type : Array
         }
+
     },
     data(){
         return {
@@ -111,34 +116,61 @@ export default {
             postId:"",
             newImagePost: null,
             postImg:"",
-            newPostContent : this.content
+            newPostContent : this.content, 
+            isAdmin : false, 
         }
     },
-    created(){
-        const self = this;
-        axios.get("http://localhost:3000/api/post/readAll", {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
-               .then(function(response){
-                   self.posts = response.data
-                   console.log(self.posts)
-               })
-               .catch(function(error){
-                   console.log(error)
-               })
-    },
-    
+   
     computed: {
         ...mapState(["token", "userId", "identifiant"]),
     },
     methods: {
+
         identifiantPost : function(param){
             return this.postId = param
         },
-        
         goProfil : function(param){
             this.$store.dispatch("identifiant", param)
             this.$router.push({path : `/profil/${this.$store.state.identifiant}`})
         }, 
-        readPostComments : function(param){
+        showUp : function(){
+            const showUp = document.getElementById("show-up")
+            showUp.classList.toggle("unvisible")
+        },
+        showActions : function(){ 
+            let test = this.postId + '_actions'
+            let actions = document.getElementById(test)
+            actions.classList.toggle("unvisible")
+        },
+        displayComs(param) {
+                const test = this.postId + '_tous_les_coms'
+                const allComments = document.getElementById(test)
+                allComments.classList.toggle("unvisible")
+                this.readPostComments(param)
+        },
+        readPostComments : function(postId){
+            const self = this;
+                axios.get(`http://localhost:3000/api/comment/read/${postId}`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
+               .then(function(response){
+                   self.postComments = response.data 
+                })
+               .catch(function(error){
+                   console.log(error)
+               })   
+            .then(function(){
+                self.$emit("other-change",true)
+            })
+            .catch(function(error){
+                console.log(error)
+            })               
+        },
+        deleteCom(param){
+            console.log("delition")
+            this.readPostComments(param)
+            this.$emit("other-change", true)
+        },
+        modifierComment(param){
+            console.log("MODIFIER COMM")
             const self = this;
                 axios.get(`http://localhost:3000/api/comment/read/${param}`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
                .then(function(response){
@@ -147,118 +179,26 @@ export default {
                 })
                .catch(function(error){
                    console.log(error)
-               })  
-            .then(function(){
-                const test = self.postId + '_create-com'
-                const actions = document.getElementById(test)
-                actions.classList.toggle("unvisible")
-                
-                const idComposant = self.postId + '_comment-composant'
-                const comComposant = document.getElementById(idComposant)
-                console.log("idComposant", idComposant)
-                console.log("comCompo", comComposant)
-                comComposant.classList.toggle("unvisible")
-            })
-            .catch(function(error){
-                console.log(error)
-            })      
-        },
-        showActions : function(){ 
-            let test = this.postId + '_actions'
-            let actions = document.getElementById(test)
-            actions.classList.toggle("unvisible")
-        },
-        deletePost : function(param) {
-            axios.delete(`http://localhost:3000/api/post/${param}/delete`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
-               .then(function(response){
-                   console.log(response)
-                })
-                .catch(function(error){
-                    console.log(error)
-                })
-        },
-        createComment : function(param){
-            if(this.commentaireImg && this.commentaireContent =="") {
-                const commentMessage = {
-                    content: this.commentaireContent,
-                    userId : this.$store.state.userId,
-                    postId : param
-                }
-                const fd = new FormData()
-                fd.append("image", this.commentaireImg, this.commentaireImg.name)
-                fd.append("commentMessage", JSON.stringify(commentMessage))
+               })
             
-                axios.post(`http://localhost:3000/api/comment/${param}/create`, 
-                fd, {headers:
-                        { 
-                        "Authorization" : `Bearer ${this.$store.state.token}`,
-                        "Content-Type": "multipart/form-data"
-                        }
-                    })
-                    .then(function(response){
-                        console.log(response)
-                        const createMessage = document.getElementById("create_message")
-                        createMessage.classList.toggle("unvisible")
-                    })
-                    .catch(function(error){
-                        console.log(error)
-                    })
-            }else if (this.commentaireContent !=="" && this.commentaireImg ==null){
-                const commentMessage = {
-                    content : this.commentaireContent,
-                    userId : this.$store.state.userId,
-                    postId : param
-                }
-                axios.post(`http://localhost:3000/api/comment/${param}/create`, 
-                    commentMessage, 
-                    {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}
-                })
-                    .then(function(response){
-                        console.log(response)
-                        const createMessage = document.getElementById("create_message")
-                        createMessage.classList.toggle("unvisible")
-                    })
-                    .catch(function(error){
-                        console.log(error)
-                    })
-            } else if(this.commentaireImg && this.commentaireContent !==""){
-                const commentMessage = {
-                    content: this.commentaireContent,
-                    userId : this.$store.state.userId,
-                    postId : param
-                }
-                const fd = new FormData()
-                fd.append("image", this.commentaireImg, this.commentaireImg.name)
-                fd.append("commentMessage", JSON.stringify(commentMessage))
-            
-                axios.post(`http://localhost:3000/api/comment/${param}/create`, 
-                fd, {headers:
-                        { 
-                        "Authorization" : `Bearer ${this.$store.state.token}`,
-                        "Content-Type": "multipart/form-data"
-                        }
-                    })
-                    .then(function(response){
-                        console.log(response)
-                        const createMessage = document.getElementById("create_message")
-                        createMessage.classList.toggle("unvisible")
-                    })
-                    .catch(function(error){
-                        console.log(error)
-                    })
-            } 
-        }, 
-        showUpload : function(){
-            let testing = this.postId +'_showUpload'
-            const show = document.getElementById(testing)
-            console.log(show)
-            show.classList.toggle("unvisible")
-        },
-        selectedFile(event) {
-            this.commentaireImg = event.target.files[0];  
         },
         selectFile(event) {
             this.newImagePost = event.target.files[0];  
+        },
+        closeUp: function() {
+            console.log("CLOSE UP")
+            const idPostUpdate = this.postId + '_postUpdate'
+            const postUpdate = document.getElementById(idPostUpdate)
+            postUpdate.classList.toggle("unvisible", "noScroll")
+            document.body.style.overflow ='visible'
+            document.body.style.backgroundColor ="white"
+            const profilTitre = document.getElementById("profil-titre")
+            profilTitre.style.backgroundColor = 'white'
+            const posts = document.getElementsByClassName("card")
+                for (let i=0; i<posts.length; i++) {
+                    posts[i].style.backgroundColor='white'
+                }  
+            this.newPostContent = this.content
         },
         updatePost : function(){
             const idActions = this.postId + '_actions'
@@ -281,24 +221,9 @@ export default {
                 }  
               }      
         },
-        showUp : function(){
-            const showUp = document.getElementById("show-up")
-            showUp.classList.toggle("unvisible")
-        },
-        closeUp: function() {
-            const idPostUpdate = this.postId + '_postUpdate'
-            const postUpdate = document.getElementById(idPostUpdate)
-            postUpdate.classList.toggle("unvisible", "noScroll")
-            document.body.style.overflow ='visible'
-            document.body.style.backgroundColor ="white"
-            const profilTitre = document.getElementById("profil-titre")
-            profilTitre.style.backgroundColor = 'white'
-            const posts = document.getElementsByClassName("card")
-                for (let i=0; i<posts.length; i++) {
-                    posts[i].style.backgroundColor='white'
-                }  
-        },
         updatePayloadPost : function(param){
+            this.closeUp()
+            const self= this;
             if(this.newPostcontent !=="" && this.newImagePost !== null) {
                 const newData = {
                     content : this.newPostcontent,
@@ -322,9 +247,7 @@ export default {
                         console.log(error)
                     })
                 .then(function(){
-                    const idPostUpdate = this.postId + '_postUpdate'
-                    const postUpdate = document.getElementById(idPostUpdate)
-                    postUpdate.classList.toggle("unvisible")
+                    self.$emit("update-post", true)
                 })
                 .catch(function(error){
                         console.log(error)
@@ -345,16 +268,33 @@ export default {
                         console.log(error)
                     })
                 .then(function(){
-                    const idPostUpdate = this.postId + '_postUpdate'
+                    self.$emit("update-post", true)
+                    const idPostUpdate = self.postId + '_postUpdate'
                     const postUpdate = document.getElementById(idPostUpdate)
                     postUpdate.classList.add("unvisible")
                 })
                 .catch(function(error){
-                        console.log(error)
+                    console.log(error)
                 })
             } else {
                 throw "Veuillez remplir les champs"
             } 
+        },
+        deletePost : function(param) {
+            const self= this;
+            axios.delete(`http://localhost:3000/api/post/${param}/delete`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
+               .then(function(response){
+                   console.log(response)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })
+            .then(function(){
+                self.$emit('delete-post', true)
+            })
+            .catch(function(error){
+                console.log(error)
+            })
         },
 
     }
@@ -606,7 +546,7 @@ hr {
     cursor: pointer;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
 
   .overlay
   {
@@ -614,7 +554,7 @@ hr {
       left: 16%;
   }
 
-  #boutonImage
+  #bouton_image
   {
     width: 35%;
     margin-bottom: 5px;

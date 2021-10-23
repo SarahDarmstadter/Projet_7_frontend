@@ -1,14 +1,13 @@
 <template>
-    <div id="create_commentaire" class="create_commentaire">
-        <div class="comment-input"> 
-            <p> postid {{ id }}</p>
-            <input v-model="commentaireContent"  v-on:keyup.enter="createComment()" type="text" class="form-control" placeholder="Ecrivez votre commentaire..." />
-            <div @click="show()" class="fonts"> <i class="fa fa-camera"></i> </div>
-            <div class="unvisible show-upload" id="showUpload">
+    <div id="create-commentaire" class="create_commentaire">
+       <div class="_create_com " :id="identifiantPost(id)+'_create_com'">
+            <input v-model="commentaireContent"  v-on:keyup.enter="createCom(id)" type="text" class="form-control" placeholder="Ecrivez votre commentaire..." />
+            <div class="uploads" @click="showUpload()"><i class="fa fa-camera fonts"></i></div>
+            <div class="unvisible show-upload" :id="identifiantPost(id)+'_showUpload'">
                 <input @change="selectedFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
-                <button id="boutonImage" class="btn-profil" @click="uploadImage()"> Upload image </button>
+                <button id="bouton_picture" class="btn-profil" @click="createCom(id)"> Publier </button>
             </div>
-        </div>
+            </div>    
     </div>
 </template>
 
@@ -18,37 +17,46 @@ import axios from 'axios'
 
 export default {
     name : 'createCommentaire',
-   props : {
-      posts : {
-           type:Number
-       }
+    props : {
+
+       id : {
+            type : Number
+        }
    },
     data(){
         return {
             commentaireContent :"",
             commentaireImg : "",
             image : null, 
+            postId :"",
         }
     },
     methods: {
-        show : function(){
-            const show = document.getElementById("showUpload")
-            show.classList.toggle("unvisible")
+        identifiantPost : function(param){
+            return this.postId = param
         },
+        showUpload : function(){
+            let testing = this.postId +'_showUpload'
+            const show = document.getElementById(testing)
+            console.log(show)
+            show.classList.toggle("unvisible")
+        },     
         selectedFile(event) {
             this.image = event.target.files[0];  
         },
-        createComment : function(){
-            if(this.image && this.commentaireContent !=="") {
+        createCom : function(param){
+            const self= this;
+            if(this.commentaireImg && this.commentaireContent =="") {
                 const commentMessage = {
-                    content : this.commentaireContent,
-                    userId : this.$store.state.userId
+                    content: this.commentaireContent,
+                    userId : this.$store.state.userId,
+                    postId : param
                 }
                 const fd = new FormData()
-                fd.append("image", this.image, this.image.name)
+                fd.append("image", this.commentaireImg, this.commentaireImg.name)
                 fd.append("commentMessage", JSON.stringify(commentMessage))
             
-                axios.post(`http://localhost:3000/api/comment/create`, 
+                axios.post(`http://localhost:3000/api/comment/${param}/create`, 
                 fd, {headers:
                         { 
                         "Authorization" : `Bearer ${this.$store.state.token}`,
@@ -57,33 +65,76 @@ export default {
                     })
                     .then(function(response){
                         console.log(response)
-                        const createMessage = document.getElementById("create_message")
-                        createMessage.classList.toggle("unvisible")
+                        self.commentaireContent = ""
                     })
                     .catch(function(error){
                         console.log(error)
                     })
+                .then(function(){
+                    console.log("EMIT")
+                    self.$emit("create-comm", param)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })
             }else if (this.commentaireContent !==""){
                 const commentMessage = {
                     content : this.commentaireContent,
-                    userId : this.$store.state.userId
+                    userId : this.$store.state.userId,
+                    postId : param
                 }
-                axios.post(`http://localhost:3000/api/comment/create`, 
+                axios.post(`http://localhost:3000/api/comment/${param}/create`, 
                     commentMessage, 
                     {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}
                 })
                     .then(function(response){
                         console.log(response)
-                        const createMessage = document.getElementById("create_message")
-                        createMessage.classList.toggle("unvisible")
+                        self.commentaireContent = ""
                     })
                     .catch(function(error){
                         console.log(error)
                     })
-            } else {
-                throw "Veuillez remplir les champs"
-            } 
-        },  
+                .then(function(){
+                    console.log("EMIT")
+                    self.$emit("create-comm", param)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })
+            } else if(this.commentaireImg && this.commentaireContent !==""){
+                    const commentMessage = {
+                        content: this.commentaireContent,
+                        userId : this.$store.state.userId,
+                        postId : param
+                    }
+                    const fd = new FormData()
+                    fd.append("image", this.commentaireImg, this.commentaireImg.name)
+                    fd.append("commentMessage", JSON.stringify(commentMessage))
+                
+                    axios.post(`http://localhost:3000/api/comment/${param}/create`, 
+                    fd, {headers:
+                            { 
+                            "Authorization" : `Bearer ${this.$store.state.token}`,
+                            "Content-Type": "multipart/form-data"
+                            }
+                        })
+                    .then(function(response){
+                        console.log(response)
+                        self.commentaireContent = ""
+                    })
+                    .catch(function(error){
+                        console.log(error)
+                    })
+                .then(function(){
+                    console.log("EMIT")
+                    self.$emit("create-comm", param)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })   
+            }
+        }
+            
     }
 }
 </script>

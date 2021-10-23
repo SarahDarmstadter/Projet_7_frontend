@@ -43,7 +43,7 @@ export default new Vuex.Store({
             state.status = status
         },
         token : function(state, token) {
-            localStorage.setItem('token', JSON.stringify(token))
+            sessionStorage.setItem('token', JSON.stringify(token))
             state.token = token
             console.log("state.token", state.token)
         }, 
@@ -56,11 +56,16 @@ export default new Vuex.Store({
         identifiant : function(state, identifiant){
             state.identifiant = identifiant
         }, 
-        logOut : function(state){
-            state.logOut = true
+        logOut : function(state, log){
+           log = true
+            state.logOut = log
         }
   },
     actions: {
+        setStatus : function({commit}, status){
+            commit("setStatus", status)
+            console.log("setStatus", status)
+        },
         token : function({commit}, token){
             commit("token", token)
             console.log("token depuis le store", token)
@@ -68,9 +73,9 @@ export default new Vuex.Store({
         userId : function({commit}, userId) {
             commit("userId", userId)
         },
-        logOut : function(){
+        logOut : function({commit}, log){
+            commit("logOut", log)
             sessionStorage.clear();
-            localStorage.clear();
         }, 
         isAdmin : function({commit}){
             commit("isAdmin", true)
