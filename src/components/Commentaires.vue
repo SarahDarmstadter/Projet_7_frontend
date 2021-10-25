@@ -6,28 +6,28 @@
                 <div class="d-flex flex-column ml-2 commentaire_texte"> 
                     <div class="action">
                         <p @click="goProfil(user.id)" class="name">{{ user.userName}}</p>
-                        <div  v-if="user.id == userId || isAdmin == true" @click="showAction()" class="dots">
+                        <div  v-if="user.id == userId || isAdmin == true" @click="showAction(id)" class="dots">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
                                 <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
                             </svg>
                         </div>
                     </div>
-                    <p class="comment-text"  :id="identifiantComment(id)+ '_content'">{{ content }}</p>
+                    <p class="comment-text"  :id="identifiantComment(id)+ '_content'">{{ newComContent }}</p>
                     <div class="input_change unvisible" :id="identifiantComment(id)+ '_input-change'">
                         <div class="flex-col">
                             <textarea v-on:keyup.enter="updatePayloadCom(id)" v-model="newComContent" class="com_update form-control"></textarea>
                             <div class="d-flex annulation">
                                 <p class="annuler" @click="cancelUpdate()">Annuler</p>
-                                <button @click="showUp()" class="btn-profil btn-image btn-modifier" >Image</button>
+                                <button @click="showUp(id)" class="btn-profil btn-image btn-modifier" >Image</button>
                             </div>
                         </div>
-                        <div class="unvisible show-up" id="show">
-                            <input @change="selectFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
+                        <div class="unvisible show-up" :id="identifiantComment(id)+ '_show'">
+                            <input @change="selectedFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
                             <button id="bouton_file" class="btn-profil btn-modifier btn-publier btn-danger" @click="updatePayloadCom(id)">Modifier</button>
                         </div>
                     </div>
                 </div>
-                <img v-if="image" :src="image"  class="img-fluid commentaire_texte">
+                <img :id="identifiantComment(id)+'_img'" v-if="image" :src="image"  class="img-fluid commentaire_texte">
                 <div :id="identifiantComment(id)+'_actions'" class="actions unvisible">
                     <p @click="updateComment(id)" class="bouton_action">Modifier</p>
                     <p @click="deleteComment(id)" class="bouton_action">Supprimer</p>
@@ -66,14 +66,15 @@ export default {
         return {
             comments:[],
             commentId:"",
-            newImageCom : null,
-            newComContent : this.content, 
+            newImageCom : "",
+            newComContent : JSON.parse(JSON.stringify(this.content)), 
             identifiant : this.$store.state.identifiant, 
             isAdmin : false,
+
         }
     },
     computed : {
-        ...mapState(["token", "userId"])
+        ...mapState(["token", "userId"]),
     },
     methods: {
         goProfil : function(param){
@@ -83,26 +84,29 @@ export default {
         identifiantComment : function(param){
             return this.commentId = param
         },
-        showAction : function(){
+        showAction : function(param){
+        console.log("show action param / id",param)
             const idCom = this.commentId + '_actions'
+            console.log("commentaire id", idCom)
             const actions = document.getElementById(idCom)
-            console.log("idCom", idCom)
             actions.classList.toggle("unvisible")
         },
          showUp : function(){
-            const showUp = document.getElementById("show")
+            const idShowUp = this.commentId + '_show'
+            const showUp = document.getElementById(idShowUp)
             showUp.classList.toggle("unvisible")
         },
-        selectFile(event) {
+        selectedFile(event) {
             this.newImageCom = event.target.files[0];  
+            console.log("this newImahe", this.newImageCom)
         },
         deleteComment : function(param){
             const self= this;
             axios.delete(`http://localhost:3000/api/comment/${param}/delete`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
                .then(function(response){
                    console.log(response)
-                   self.$emit("delete-com", true)
-                   self.showAction()
+                   console.log("id du com supprimé", param)
+                   self.$emit("delete-com", param)
                 })
                 .catch(function(error){
                     console.log(error)
@@ -123,7 +127,9 @@ export default {
         },
         updatePayloadCom : function(param){
             const self= this;
-             if(this.newComContent !=="" && this.newImageCom !== null) {
+             if(this.newComContent !=="" && this.newImageCom !=="") {
+                console.log("this newImahe upload", this.newImageCom)
+
                 const newData = {
                     content : this.newComContent,
                     id : param
@@ -144,22 +150,18 @@ export default {
                         const idContent = self.commentId + '_content'
                         const contentP = document.getElementById(idContent)
                         contentP.classList.remove("unvisible")
+                        contentP.innerHtml = self.newComContent
 
                         const idInputChange = self.commentId +'_input-change'
                         const inputChange = document.getElementById(idInputChange)
                         inputChange.classList.toggle("unvisible")
+                        
                     })
                     .catch(function(error){
                         console.log(error)
                     })
-                .then(function(param){
-                    self.$emit("change-com", param)
-                })
-                .catch(function(error){
-                    console.log(error)
-                })
                 
-            }else if (this.newComcontent !=="" && this.newImageCom == null ){
+            }else if (this.newComContent !=="" && this.newImageCom == "" ){
                 const comMessage = {
                     content : this.newComContent,
                     id : param
@@ -169,6 +171,8 @@ export default {
                     {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}
                 })
                     .then(function(response){
+                        console.log("CONSOLE.LOG")
+
                         console.log("AXIOS PUT COM", response)
                         const idContent = self.commentId + '_content'
                         const contentP = document.getElementById(idContent)
@@ -177,17 +181,13 @@ export default {
                         const idInputChange = self.commentId +'_input-change'
                         const inputChange = document.getElementById(idInputChange)
                         inputChange.classList.toggle("unvisible")
+                        
                     })
                     .catch(function(error){
                         console.log(error)
                     })
-                .then(function(param){
-                    self.$emit("change-com", param)
-                })
-                .catch(function(error){
-                    console.log(error)
-                })
-            } else if (this.newImageCom !== null && this.newComContent == "") {
+                
+            } else if (this.newImageCom !== "" && this.newComContent == "" ){
                 const fd = new FormData()
                 fd.append("image", this.newImageCom, this.newImageCom.name)
                 
@@ -196,6 +196,7 @@ export default {
                     {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}
                 })
                     .then(function(response){
+                        console.log("CONSOLE.LOG")
                         console.log("AXIOS PUT COM",response)
                         const idContent = self.commentId + '_content'
                         const contentP = document.getElementById(idContent)
@@ -204,16 +205,13 @@ export default {
                         const idInputChange = self.commentId +'_input-change'
                         const inputChange = document.getElementById(idInputChange)
                         inputChange.classList.toggle("unvisible")
+
+
                     })
                     .catch(function(error){
                         console.log(error)
                     }) 
-                .then(function(param){
-                    self.$emit("change-com", param)
-                })
-                .catch(function(error){
-                    console.log(error)
-                })
+              
                 
             }
         },

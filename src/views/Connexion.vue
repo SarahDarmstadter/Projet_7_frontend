@@ -56,8 +56,9 @@
                 <p class="form-row" v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
             </div>
             <div class="form-group form-group--password">  
-            <b-input v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" 
-            required/>
+            <b-input v-if= "mode== 'login'" v-on:keyup.enter="connexion()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
+            <b-input v-else v-on:keyup.enter="createAccount()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
+    
                 <div @click="switchEye()" class="icon-eye">
                     <b-icon  v-if= "passwordVisibility == 'hidden'" icon="eye" class="eye text-muted"></b-icon>  
                     <b-icon  v-else icon="eye-slash" class="eye-slash text-muted"></b-icon>
@@ -128,38 +129,42 @@ export default {
             return this.mode ='create';
         },
         createAccount : function(){
-            const self = this;
-                axios.post('http://localhost:3000/api/auth/sign-up', {
-                    lastName : this.lastName,
-                    firstName : this.firstName,
-                    userName : this.userName,
-                    imageUser: this.imageUser,
-                    email : this.email,
-                    password : this.password
-                })  
-                .then(function(response) {
-                    console.log("RESPONSE AXIOS POST SIGNUP", response.data)
-                    self.$store.dispatch('token', response.data.token)
-                    self.$store.dispatch("userId", response.data.userId)
-                    self.$store.dispatch('identifiant', response.data.userId)
-                    self.$store.dispatch("setStatus", "")
+            if(this.mode =='create' && this.password != "" && this.email != "" && this.userName!="" && this.lastName !="" && this.firstName !="") {
+                    const self = this;
+                    axios.post('http://localhost:3000/api/auth/sign-up', {
+                        lastName : this.lastName,
+                        firstName : this.firstName,
+                        userName : this.userName,
+                        imageUser: this.imageUser,
+                        email : this.email,
+                        password : this.password
+                    })  
+                    .then(function(response) {
+                        console.log("RESPONSE AXIOS POST SIGNUP", response.data)
+                        self.$store.dispatch('token', response.data.token)
+                        self.$store.dispatch("userId", response.data.userId)
+                        self.$store.dispatch('identifiant', response.data.userId)
+                        self.$store.dispatch("setStatus", "")
 
+                        })
+                    .catch(function(error){
+                        console.log(error)
+                        self.$store.dispatch("setStatus", "erreur_creation")
                     })
+                .then(function(){
+                    if(self.$store.state.status !== ""){
+                        self.redirectionCreation()
+                    } else {
+                        self.$store.dispatch("setStatus", "")
+                    }
+                    
+                })
                 .catch(function(error){
                     console.log(error)
-                    self.$store.dispatch("setStatus", "erreur_creation")
                 })
-            .then(function(){
-                if(self.$store.state.status !== ""){
-                    self.redirectionCreation()
-                } else {
-                    self.$store.dispatch("setStatus", "")
-                }
-                
-            })
-            .catch(function(error){
-                console.log(error)
-            }) 
+            }else{
+                throw "veuillez remplir tous les champs"
+            }
         },
 
         connexion : function(){
@@ -182,9 +187,7 @@ export default {
 
                 })
             .then(function(){
-                 if(self.$store.state.status !== "erreur_login"){
-                    self.redirectionConnexion()
-                }
+                self.redirectionConnexion()
             })
             .catch(function(error){
                 console.log(error)
@@ -201,9 +204,7 @@ export default {
          },
          redirectionCreation : function() {
             if(this.$store.state.token !==""){
-                let identifiant =  this.$store.state.identifiant
-                this.$router.push({path : `/profil/${identifiant}`})
-        
+                this.$router.push({path : `/profil/${this.$store.state.userId}`})
            }else{
                     throw "Vous n'etes pas connecté et/ou autorisés"
                 }

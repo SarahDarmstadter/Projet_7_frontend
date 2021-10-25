@@ -49,13 +49,14 @@
                                         <p @click="displayComs(id)" v-else class="commentaires" id="commentaires"> Commenter </p> 
                                     </div>
                                 </div>
-                                <div class="unvisible" :id="identifiantPost(id)+'_tous_les_coms'" style="border: solid 1px red">
-                                    <div class="comments" :id="identifiantPost(id)+'_comment-composant'" style="border: solid 2px green" >
+                                <div class="unvisible" :id="identifiantPost(id)+'_tous_les_coms'" >
+                                    <div class="comments" :id="identifiantPost(id)+'_comment-composant'">
                                         <commentaires :postId="identifiantPost(id)" 
                                         v-for="postComment in postComments"
                                         :key="postComment.id"
                                         v-bind="postComment"
                                         @delete-com="deleteCom"
+                                        
                                         />
                                     </div> 
                                    <div class="createC">
@@ -125,7 +126,6 @@ export default {
         ...mapState(["token", "userId", "identifiant"]),
     },
     methods: {
-
         identifiantPost : function(param){
             return this.postId = param
         },
@@ -152,7 +152,8 @@ export default {
             const self = this;
                 axios.get(`http://localhost:3000/api/comment/read/${postId}`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
                .then(function(response){
-                   self.postComments = response.data 
+                   console.log("postComments", response.data)
+                   self.postComments = response.data
                 })
                .catch(function(error){
                    console.log(error)
@@ -165,21 +166,30 @@ export default {
             })               
         },
         deleteCom(param){
-           this.postComments.splice(param, 1)
-            this.$emit("other-change", true)
+            console.log("param splice", param)
+            for (let i=0; i< this.postComments.length; i++) {
+                console.log("postCoomments.id", this.postComments[i].id)
+                
+                 if(this.postComments[i].id === param) {
+                    console.log("id = param")
+                    this.postComments.splice(i, 0)
+                    console.log("this.postComments.splice(i, 1)", this.postComments.splice(i, 1))
+                    }
+                this.$emit("other-change", true)
+            }     
         },
-        modifierComment(param){
-            console.log("MODIFIER COMM")
-            const self = this;
-                axios.get(`http://localhost:3000/api/comment/read/${param}`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
-               .then(function(response){
-                   console.log("ReadpostCOMMENT", response)
-                   self.postComments = response.data 
-                })
-               .catch(function(error){
-                   console.log(error)
-               })
-            
+        updateCom(param){
+            console.log(param)
+            axios.get(`http://localhost:3000/api/comment/${param}/read`, 
+                {headers : { "Authorization" : `Bearer ${this.$store.state.token}`}})
+                    .then(function(response){
+                        console.log(response)
+                    })
+                    .catch(function(error){
+                        console.log(error)
+                    })
+    
+                
         },
         selectFile(event) {
             this.newImagePost = event.target.files[0];  
