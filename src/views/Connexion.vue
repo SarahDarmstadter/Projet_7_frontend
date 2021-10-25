@@ -52,7 +52,7 @@
                 <input v-model="userName" type="text" class="form-control" placeholder="Username" required />
             </div>
             <div class="form-group">
-                <input v-model="email" type="email" class="form-control" placeholder="email" required />
+                <input v-model="email" type="email" class="form-control" placeholder="Email" required />
                 <p class="form-row" v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
             </div>
             <div class="form-group form-group--password">  

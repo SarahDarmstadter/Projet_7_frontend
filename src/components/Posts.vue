@@ -55,7 +55,7 @@
                                         v-for="postComment in postComments"
                                         :key="postComment.id"
                                         v-bind="postComment"
-                                        @delete-com="readPostComments"
+                                        @delete-com="deleteCom"
                                         />
                                     </div> 
                                    <div class="createC">
@@ -165,8 +165,7 @@ export default {
             })               
         },
         deleteCom(param){
-            console.log("delition")
-            this.readPostComments(param)
+           this.postComments.splice(param, 1)
             this.$emit("other-change", true)
         },
         modifierComment(param){

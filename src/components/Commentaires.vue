@@ -101,16 +101,12 @@ export default {
             axios.delete(`http://localhost:3000/api/comment/${param}/delete`, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
                .then(function(response){
                    console.log(response)
+                   self.$emit("delete-com", true)
+                   self.showAction()
                 })
                 .catch(function(error){
                     console.log(error)
                 })
-            .then(function(){
-                self.$emit("delete-com", param)
-            })
-            .catch(function(error){
-                console.log(error)
-            })
         }, 
         updateComment : function(){
             const idContent = this.commentId + '_content'

@@ -50,7 +50,7 @@ export default {
         },
         changePublication(){
             this.getAllposts()
-        }, 
+        }
         
 
         

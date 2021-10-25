@@ -1,6 +1,6 @@
 <template>
     <div id="comments">
-        <div  class="d-flex flex-row p-2"> 
+        <div v-for="postComment in postComments" :key="postComment.id"  v-bind="postComment.id" class="d-flex flex-row p-2"> 
             <img :src="user.imageUser" width="30px" class="img-thumbnail rounded-image">
             <div class="contenu_comm">
                 <div class="d-flex flex-column ml-2 commentaire_texte"> 
@@ -64,7 +64,7 @@ export default {
     },
     data() {
         return {
-            comments:[],
+            postComments:[],
             commentId:"",
             newImageCom : null,
             newComContent : this.content, 
