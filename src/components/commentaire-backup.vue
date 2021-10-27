@@ -12,6 +12,19 @@
                             </svg>
                         </div>
                     </div>
+
+
+<p> {{ likes.length }} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                            </svg> 
+                                        </p>
+
+
+
+
+
+
+
                     <p class="comment-text"  :id="identifiantComment(id)+ '_content'">{{ content }}</p>
                     <div class="input_change unvisible" :id="identifiantComment(id)+ '_input-change'">
                         <div class="flex-col">
@@ -76,6 +89,65 @@ export default {
         ...mapState(["token", "userId"])
     },
     methods: {
+        likePost : function(param){
+            console.log("param", param)
+            const self = this;
+            let hasLiked =[param];
+            for (let i=0; i < this.likes.length; i++){
+                    hasLiked.push(this.likes[i].userId)
+                }
+                console.log(hasLiked)
+            
+            //si le post n'est pas liké ou si l'utilisateur connecté ne k'a pas liké 
+            if(this.likes.length == 0 && hasLiked[0] == param || !hasLiked.includes(this.$store.state.userId) && hasLiked[0] == param) {
+
+                 const likeData = {
+                            like : 1,
+                            userId : this.$store.state.userId,
+                            postId : param
+                        }
+                axios.post(`http://localhost:3000/api/like/${param}/like`, likeData, {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}})
+                    .then(function(response){
+                        console.log("commentaire crée", response)
+                        self.$emit("other-change", true)
+                        hasLiked.push(self.$store.state.userId)
+                    })
+                    .catch(function(error){
+                        console.log(error)
+                    })
+                .then(function(){
+                    console.log(hasLiked)
+                })
+                .catch(function(error){
+                    console.log(error)
+                })
+            }else   { 
+                // si l'utilisateur a deja liké le post
+                if (hasLiked.includes(this.$store.state.userId) && hasLiked[0] == param ){
+                    console.log("userID", this.$store.state.userId)
+                    console.log("param", param)
+                            axios.delete(`http://localhost:3000/api/like/${param}/delete`, 
+                                {headers : {"Authorization" : `Bearer ${this.$store.state.token}`}})
+                    
+                                    .then(function(response){
+                                        console.log("commentaire supprimé", response)
+                                        self.$emit('other-change', true)
+                                    })
+                                    .catch(function(error){
+                                        console.log(error)
+                                    })
+                                 
+                }
+            }
+        
+            
+                
+
+                            
+                        
+
+                        
+            }
         goProfil : function(param){
             this.$store.dispatch("identifiant", param)
             this.$router.push({path : `/profil/${this.$store.state.identifiant}`})

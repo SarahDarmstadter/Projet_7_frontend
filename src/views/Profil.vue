@@ -211,7 +211,7 @@ export default {
            }     
         },
         logOut : function(){
-            this.$store.dispatch("logOut")
+            localStorage.clear()
             router.push('/')
         }
     }

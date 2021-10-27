@@ -107,7 +107,7 @@ export default {
         },
         createPost : function(){
             const self= this;
-            if(this.image && this.title!=="" && this.message !=="") {
+            if(this.image && this.title!=="" && this.content !=="") {
                 const postMessage = {
                     title : this.title,
                     content : this.content,
@@ -128,7 +128,9 @@ export default {
                         console.log(response)
                         const createMessage = document.getElementById("create_message")
                         createMessage.classList.toggle("unvisible")
-                        self.$router.push('/forum')
+                        //self.$router.push('/forum')
+                        self.title =""
+                        self.content =""
                     })
                     .catch(function(error){
                         console.log(error)
@@ -139,7 +141,7 @@ export default {
                 .catch(function(error){
                     console.log(error)
                 })
-            }else if (this.title!=="" && this.message !==""){
+            }else if (this.title!=="" && this.content !==""){
                 const postMessage = {
                     title : this.title,
                     content : this.content,
@@ -153,6 +155,8 @@ export default {
                         console.log(response)
                         const createMessage = document.getElementById("create_message")
                         createMessage.classList.toggle("unvisible")
+                        self.title =""
+                        self.content =""
                     })
                     .catch(function(error){
                         console.log(error)
@@ -172,6 +176,7 @@ export default {
              this.$router.push({path : `/profil/${this.$store.state.userId}`})
         },
         logOut : function(){
+            sessionStorage.clear();
             this.$store.commit('logOut')
             this.$router.push({path : `/`})
         }

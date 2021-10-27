@@ -32,7 +32,7 @@
                                     <button class="close" @click="closeUp()"><i class="fas fa-times"></i></button>
                                 </div>
                                 <div class="input_change">
-                                    <textarea v-on:keyup.enter="updatePayloadPost(id)" v-model="newPostContent" class="post_update"></textarea>
+                                    <textarea v-on:keyup.enter="updatePayloadPost(id)" v-model="newPostcontent" class="post_update"></textarea>
                                     <button @click="showUp()" class="btn-profil btn-image btn-modifier" >Image</button>
                                     <div class="unvisible show-up" id="show-up">
                                             <input @change="selectFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
@@ -42,7 +42,15 @@
                             </div>
                                 <hr>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex flex-row icons d-flex align-items-center"> <i class="fa fa-heart"></i> <i class="fa fa-smile-o ml-2"></i> </div>
+                                    <div class="d-flex flex-row icons d-flex align-items-center"> 
+                                        <p style="font-size: 13px" v-if="likes.length >= 1"> {{ likes.length }} </p>
+                                            <svg v-if="this.userIds.includes(this.$store.state.userId)==false" :id="identifiantPost(id) +'_like'" @click="likePost(id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart like" viewBox="0 0 16 16">
+                                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                            </svg>
+                                            <svg v-else-if="this.userIds.includes(this.$store.state.userId)==true" :id="identifiantPost(id) +'_unlike'" @click="deleteLike(id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-heart-fill like" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                            </svg> 
+                                    </div>
                                     <div class="d-flex flex-row muted-color comm_section">
                                        <p @click="displayComs(id)" v-if ="comments.length >1" class="commentaires" id="commentaires"> {{ comments.length }} Commentaires </p>
                                         <p @click="displayComs(id)" v-else-if =" 1> comments.length < 1 " class="commentaires" id="commentaires"> 1 Commentaire </p>
@@ -86,7 +94,7 @@ export default {
     name: "Post", 
     components : {
         Commentaires,
-        createCommentaire
+        createCommentaire,
     },
     props : {
         id : {
@@ -106,6 +114,9 @@ export default {
         },
         comments : {
             type : Array
+        }, 
+        likes : {
+            type : Array
         }
 
     },
@@ -117,13 +128,17 @@ export default {
             postId:"",
             newImagePost: null,
             postImg:"",
-            newPostContent : this.content, 
+            newPostcontent : this.content, 
             isAdmin : false, 
+            userIds:[this.id]
         }
     },
-   
     computed: {
         ...mapState(["token", "userId", "identifiant"]),
+    },
+    mounted(){
+        console.log("mounted")
+            this.getUserIds()
     },
     methods: {
         identifiantPost : function(param){
@@ -171,9 +186,7 @@ export default {
                 console.log("postCoomments.id", this.postComments[i].id)
                 
                  if(this.postComments[i].id === param) {
-                    console.log("id = param")
                     this.postComments.splice(i, 0)
-                    console.log("this.postComments.splice(i, 1)", this.postComments.splice(i, 1))
                     }
                 this.$emit("other-change", true)
             }     
@@ -187,9 +200,7 @@ export default {
                     })
                     .catch(function(error){
                         console.log(error)
-                    })
-    
-                
+                    })  
         },
         selectFile(event) {
             this.newImagePost = event.target.files[0];  
@@ -262,8 +273,9 @@ export default {
                         console.log(error)
                 })
             }else if (this.newPostcontent !==""){
+                console.log("this.newPostContent", this.newPostcontent)
                 const postMessage = {
-                    content : this.newPostContent,
+                    content : this.newPostcontent,
                     postId : param
                 }
                 axios.put(`http://localhost:3000/api/post/${param}/update`, 
@@ -305,10 +317,82 @@ export default {
                 console.log(error)
             })
         },
+        
+        likePost : function(param){
+            const self = this;
+                if(this.userIds.includes(this.$store.state.userId) == false){
+                    let likeData = {
+                        userId : this.$store.state.userId,
+                        postId : param,
+                        like : 1
+                    }
+                    axios.post(`http://localhost:3000/api/like/${param}/like`, likeData, {headers : { "Authorization" : `Bearer ${this.$store.state.token}`}})
+                            .then(function(response){
+                                console.log("axios.post response", response)
+                                self.userIds.push(self.$store.state.userId)
+                                self.$emit("other-change", true)
+                                console.log(self.userIds) 
 
-    }
+                            })
+                            .catch(function(error){
+                                console.log(error)
+                            })
+                }
+            },
+        deleteLike : function(param){
+                    const self = this;
+                    console.log("delete")
+                    let postId = param
+                    let userId = this.$store.state.userId
+
+                    axios.delete(`http://localhost:3000/api/like/${postId}/${userId}/delete`, {headers : { "Authorization" : `Bearer ${this.$store.state.token}`}})
+                            .then(function(response){
+                                console.log("axios.delete response", response) 
+                                
+                                for(let i=0; i< self.userIds.length; i++){
+                                    if (self.userIds[i] == self.$store.state.userId) {
+                                        console.log("egalité, ca devrait splice")
+                                        self.userIds.splice(i,1)
+                                    }
+                                }
+                                self.$emit("other-change", true)
+                                console.log(self.userIds) 
+
+
+                            })
+                            .catch(function(error){
+                                console.log(error)
+                            })
+                
+            }, 
+        getUserIds : function(){
+            for (let i=0; i< this.likes.length; i++){
+                this.userIds.push(this.likes[i].userId)
+                console.log("userIds",this.userIds)}
+                return this.userIds
+            }
+        }
+
+                            
+                        
+
+                        
+            
+            
+    
+       
+            
+                          
+                   
+                    
+                
+              
+                    
+        
+            
 }
 </script>
+
 <style scoped>
 
 body 
@@ -553,6 +637,13 @@ hr {
     border: none;
     background: white;
     cursor: pointer;
+}
+
+.like 
+{
+    margin-left: 5px;
+    margin-bottom: 14px;
+    width: 12px;
 }
 
 @media screen and (max-width: 600px) {

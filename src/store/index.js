@@ -24,7 +24,7 @@ export default new Vuex.Store({
         }
     },
     plugins: [createPersistedState({
-        storage: window.sessionStorage,
+        storage: window.localStorage,
     })],
     // getters: {
     //     userInfoProfil: state => {
@@ -59,6 +59,9 @@ export default new Vuex.Store({
         logOut : function(state, log){
            log = true
             state.logOut = log
+            state.identifiant =""
+            state.userId =""
+            state.token =""
         }
   },
     actions: {
@@ -74,8 +77,9 @@ export default new Vuex.Store({
             commit("userId", userId)
         },
         logOut : function({commit}, log){
+            localStorage.clear()
             commit("logOut", log)
-            sessionStorage.clear();
+           
         }, 
         isAdmin : function({commit}){
             commit("isAdmin", true)

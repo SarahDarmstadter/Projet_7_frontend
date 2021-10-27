@@ -12,7 +12,7 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="comment-text"  :id="identifiantComment(id)+ '_content'">{{ newComContent }}</p>
+                    <p v-if=" newComContent !==''" class="comment-text"  :id="identifiantComment(id)+ '_content'">{{ newComContent }}</p>
                     <div class="input_change unvisible" :id="identifiantComment(id)+ '_input-change'">
                         <div class="flex-col">
                             <textarea v-on:keyup.enter="updatePayloadCom(id)" v-model="newComContent" class="com_update form-control"></textarea>
@@ -98,7 +98,6 @@ export default {
         },
         selectedFile(event) {
             this.newImageCom = event.target.files[0];  
-            console.log("this newImahe", this.newImageCom)
         },
         deleteComment : function(param){
             const self= this;
@@ -128,7 +127,6 @@ export default {
         updatePayloadCom : function(param){
             const self= this;
              if(this.newComContent !=="" && this.newImageCom !=="") {
-                console.log("this newImahe upload", this.newImageCom)
 
                 const newData = {
                     content : this.newComContent,
@@ -147,15 +145,7 @@ export default {
                     })
                     .then(function(response){
                         console.log("AXIOS PUT COM",response)
-                        const idContent = self.commentId + '_content'
-                        const contentP = document.getElementById(idContent)
-                        contentP.classList.remove("unvisible")
-                        contentP.innerHtml = self.newComContent
-
-                        const idInputChange = self.commentId +'_input-change'
-                        const inputChange = document.getElementById(idInputChange)
-                        inputChange.classList.toggle("unvisible")
-                        
+                        self.cancelUpdate()  
                     })
                     .catch(function(error){
                         console.log(error)
@@ -171,17 +161,8 @@ export default {
                     {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}
                 })
                     .then(function(response){
-                        console.log("CONSOLE.LOG")
-
-                        console.log("AXIOS PUT COM", response)
-                        const idContent = self.commentId + '_content'
-                        const contentP = document.getElementById(idContent)
-                        contentP.classList.remove("unvisible")
-
-                        const idInputChange = self.commentId +'_input-change'
-                        const inputChange = document.getElementById(idInputChange)
-                        inputChange.classList.toggle("unvisible")
-                        
+                        console.log("AXIOS PUT COM", response)                       
+                        self.cancelUpdate()                       
                     })
                     .catch(function(error){
                         console.log(error)
@@ -196,23 +177,12 @@ export default {
                     {headers:{ "Authorization" : `Bearer ${this.$store.state.token}`}
                 })
                     .then(function(response){
-                        console.log("CONSOLE.LOG")
-                        console.log("AXIOS PUT COM",response)
-                        const idContent = self.commentId + '_content'
-                        const contentP = document.getElementById(idContent)
-                        contentP.classList.remove("unvisible")
-
-                        const idInputChange = self.commentId +'_input-change'
-                        const inputChange = document.getElementById(idInputChange)
-                        inputChange.classList.toggle("unvisible")
-
-
+                        console.log("AXIOS PUT COM",response)                    
+                        self.cancelUpdate()
                     })
                     .catch(function(error){
                         console.log(error)
                     }) 
-              
-                
             }
         },
         cancelUpdate : function(){
@@ -226,6 +196,8 @@ export default {
             inputChange.classList.toggle("unvisible")
         }
 
+
+        
 
                 
             

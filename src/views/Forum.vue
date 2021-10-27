@@ -42,7 +42,7 @@ export default {
                 .then(function(response){
                     console.log("RESPONSE AXIOS GET READ ALL", response)
                     self.publications = response.data
-
+                    
                 })
                 .catch(function(error){
                     console.log(error)

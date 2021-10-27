@@ -23,7 +23,6 @@ import axios from 'axios'
 export default {
     name : 'createCommentaire',
     props : {
-
        id : {
             type : Number
         }
@@ -163,9 +162,9 @@ export default {
 }
 
 .fonts {
-    position: absolute;
-    right: 5px;
-    top: 7px;
+    position: relative;
+    right: 10px;
+    bottom: 26px;
     color: #313131;
     border-radius: 34px;
     width: 27px;
@@ -193,8 +192,13 @@ export default {
     cursor: pointer;
 }
 
-    .unvisible {
-        display: none
-    }
+.unvisible {
+    display: none
+}
+
+.uploads {
+    display: flex;
+    justify-content: flex-end;
+}
 
 </style>
