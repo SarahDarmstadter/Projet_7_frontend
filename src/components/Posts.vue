@@ -656,14 +656,14 @@ hr {
 
   #bouton_image
   {
-    width: 35%;
+    width: 40%;
     margin-bottom: 5px;
     margin-top: 5px;
   }
 
   .btn-image
   {
-      width: 35%;
+      width: 40%;
   }
 
   .form-control-file 

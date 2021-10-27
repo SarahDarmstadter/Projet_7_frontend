@@ -29,7 +29,7 @@
         </header>
         <div class="container-fluid">
             <div class="row justify-content-center ">
-                <div class=" col-md-6 publier">
+                <div class=" col-md-5 publier">
                     <div class="profil-titre" id="profil-titre">
                         <img :src="imageUser" alt="photo de profil de l'auteur" class="auteur img-thumbnail img-fluid rounded-circle">
                         <button @click="showCard()" type="text" id="titre">Quoi de neuf {{ userName }} ? </button>
@@ -291,12 +291,12 @@ export default {
     
     .btn-publier 
     {
-        width: 25%;
         border-radius: 25px;
         border: none;
         cursor: pointer;
-        padding: 3px;
+        padding: 5px 7px 5px 7px;
     }
+
     .btn-publier:hover 
     {
         font-weight: bold;
