@@ -186,147 +186,141 @@ export default {
 
 <style scoped>
 
-* :before :after {
+* :before :after 
+{
     box-sizing: border-box;
 }
-    #post
-    {
-        display: flex;
-        flex-direction: column;   
-        font-size: 1em;   
-    }
 
-    #titre
-    {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+#post
+{
+    display: flex;
+    flex-direction: column;   
+    font-size: 1em;   
+}
 
-    .publier 
-    {
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-    }
+#titre
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-    .profil-titre
-    {
-        display: flex;
-        align-items: center;
-        background: white;
-        padding: 0.5%;
-        width: 100%;
-        margin-bottom: 10px;
-    }
+.publier 
+{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
 
-    .profil-titre button
-    {
-        border-radius: 34px;
-        border: none;
-        width: 100%;
-        height: 30px;
-    }
+.profil-titre
+{
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 0.5%;
+    width: 100%;
+    margin-bottom: 10px;
+}
 
-    .profil-titre img 
-    {
-        margin-right: 3%;
-        width: 50px;
-    }
+.profil-titre button
+{
+    border-radius: 34px;
+    border: none;
+    width: 100%;
+    height: 30px;
+}
 
-    .publication
-    {
-        width: 100%;
-        background: white;
-        margin-bottom: 10px;
-        border-radius: 10px;
-        box-shadow: -0.2px 0.2px 0px 0.5px rgba(0, 0, 0, 0.2);
-        border: none;
-    }
+.profil-titre img 
+{
+    margin-right: 3%;
+    width: 50px;
+}
 
-    .container
-    {
-        display: flex;
-        flex-direction: column;
-        align-content: center;
-        align-items: center;
-    }
+.publication
+{
+    width: 100%;
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: -0.2px 0.2px 0px 0.5px rgba(0, 0, 0, 0.2);
+    border: none;
+}
 
-     .show-upload
-    {
-        display: flex;
-        margin-bottom: 3%;
-    }
+.container
+{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
 
-    .unvisible {
-        display: none
-    }
+.show-upload
+{
+    display: flex;
+    margin-bottom: 3%;
+}
 
-    .icon_media 
-    {
-        display: flex;
-        background: none;
-        justify-content: flex-end;
-        border: none;
-        margin-bottom: 10px;
-        align-items:center;
-        cursor: pointer;
-        border-radius: 10px;
-        box-shadow: -0.2px 0.2px 0px 0.5px rgba(0, 0, 0, 0.2);
-    }
+.unvisible 
+{
+    display: none
+}
 
-    .icon_media:hover 
-    {
-        background-color: #f0f2f5;
-    }
-    .row > * 
-    {
-        padding: 0px;
-    }
+.icon_media 
+{
+    display: flex;
+    background: none;
+    justify-content: flex-end;
+    border: none;
+    margin-bottom: 10px;
+    align-items:center;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: -0.2px 0.2px 0px 0.5px rgba(0, 0, 0, 0.2);
+}
 
-    .col-xs-12
-    {
-        padding: 0;
-    }
+.icon_media:hover 
+{
+    background-color: #f0f2f5;
+}
+
+.row > * 
+{
+    padding: 0px;
+}
+
+.col-xs-12
+{
+    padding: 0;
+}
     
-    .btn-publier 
-    {
-        border-radius: 25px;
-        border: none;
-        cursor: pointer;
-        padding: 5px 7px 5px 7px;
-    }
+.btn-publier 
+{
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    padding: 5px 7px 5px 7px;
+}
 
-    .btn-publier:hover 
-    {
-        font-weight: bold;
-    }
+.btn-publier:hover 
+{
+    font-weight: bold;
+}
 
-    .btn-profil
-    {
-        border: solid 0.3px rgba(0, 0, 0, 0.2);
-    }
+.btn-profil
+{
+    border: solid 0.3px rgba(0, 0, 0, 0.2);
+}
 
-    #create_message 
-    {        
-        margin-right: 10px;
-        margin-left:10px;
-    }
+#create_message 
+{        
+    margin-right: 10px;
+    margin-left:10px;
+}
 
-    .flex-end
-    {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-
-    
-
-    
-
-
-   
-
-
-
+.flex-end
+{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
 </style>

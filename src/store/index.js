@@ -2,13 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate'
 
-
 Vue.use(Vuex);
-
-// let token = localStorage.getItem(token)
-// if (token) {
-//     token = JSON.parse(localStorage.getItem(token))
-// }else { token = "" } 
 
 export default new Vuex.Store({
   
@@ -26,18 +20,6 @@ export default new Vuex.Store({
     plugins: [createPersistedState({
         storage: window.localStorage,
     })],
-    // getters: {
-    //     userInfoProfil: state => {
-    //         return {
-    //             lastName : state.lastName,
-    //             firstName:  state.firstName,
-    //             userName:  state.userName,
-    //             email:  state.email,
-    //             imageUser: state.imageUser,
-    //             password: state.password
-    //         }
-    //     }
-    // },
     mutations: {
         setStatus : function(state, status) {
             state.status = status

@@ -1,15 +1,14 @@
 <template>
     <div id="forum">
         <CreatePost @create-post="changePublication" /> 
-        <p  class="titre_page_forum" v-if="publications.length < 0"> Il n'y a pas encore de publication. Soyez le premier à vous exprimer !</p>
+        <p  class="titre_page_forum" v-if="publications.length < 1"> Il n'y a pas encore de publication. Soyez le premier à vous exprimer !</p>
         <Posts  v-for="publication in publications" 
             :key="publication.id" 
             v-bind="publication" 
             @delete-post="changePublication"
             @update-post="changePublication"
             @other-change="changePublication"
-            />
-           
+            />      
     </div>
 </template>
 
@@ -36,13 +35,10 @@ export default {
     methods: {
         getAllposts(){
             const self = this;
-            axios.get('http://localhost:3000/api/post/readAll', 
-                {headers : { "Authorization" : `Bearer ${this.$store.state.token}`}
-            })
+            axios.get('http://localhost:3000/api/post/readAll', {headers : { "Authorization" : `Bearer ${this.$store.state.token}`}})
                 .then(function(response){
                     console.log("RESPONSE AXIOS GET READ ALL", response)
                     self.publications = response.data
-                    
                 })
                 .catch(function(error){
                     console.log(error)
@@ -50,13 +46,7 @@ export default {
         },
         changePublication(){
             this.getAllposts()
-        }
-        
-
-        
-    }
-   
-   
-    
+        }   
+    } 
 }
 </script>

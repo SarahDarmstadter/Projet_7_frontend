@@ -31,8 +31,7 @@
                 <div :id="identifiantComment(id)+'_actions'" class="actions unvisible">
                     <p @click="updateComment(id)" class="bouton_action">Modifier</p>
                     <p @click="deleteComment(id)" class="bouton_action">Supprimer</p>
-                </div>
-                
+                </div>  
             </div>
         </div>  
     </div>
@@ -194,16 +193,8 @@ export default {
             const idInputChange = this.commentId +'_input-change'
             const inputChange = document.getElementById(idInputChange)
             inputChange.classList.toggle("unvisible")
-        }
-
-
-        
-
-                
-            
-        
-    }
-    
+        }   
+    }   
 }
 </script>
 
@@ -228,7 +219,6 @@ export default {
 {
     color: #f0f2f5;
     background-color: #fff;
-    border-color: #8bbafe;
     outline: 0;
     box-shadow: none
 }
@@ -334,7 +324,7 @@ export default {
 }
 
 .btn-image
-  {
+{
     padding: 4px;
     margin-bottom: 5px;
     margin-top: 5px;

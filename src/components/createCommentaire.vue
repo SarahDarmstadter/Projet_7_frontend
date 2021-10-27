@@ -12,7 +12,7 @@
                 <input @change="selectedFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
                 <button id="bouton_picture" class="btn-profil" @click="createCom(id)"> Publier </button>
             </div>
-            </div>    
+        </div>    
     </div>
 </template>
 
@@ -71,7 +71,6 @@ export default {
                         console.log(response)
                         self.image = null
                         self.showUpload()
-                        
                     })
                     .catch(function(error){
                         console.log(error)
@@ -130,7 +129,6 @@ export default {
                         self.commentaireContent = ""
                         self.image= null
                         self.showUpload()
-
                     })
                     .catch(function(error){
                         console.log(error)
@@ -142,8 +140,7 @@ export default {
                     console.log(error)
                 })   
             }
-        }
-            
+        }    
     }
 }
 </script>
@@ -174,6 +171,7 @@ export default {
 {
     background-color: rgb(207, 205, 205);
 }
+
 .show-upload
 {
     display: flex;
@@ -192,11 +190,13 @@ export default {
     cursor: pointer;
 }
 
-.unvisible {
+.unvisible 
+{
     display: none
 }
 
-.uploads {
+.uploads 
+{
     display: flex;
     justify-content: flex-end;
 }

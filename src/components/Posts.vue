@@ -63,22 +63,20 @@
                                         v-for="postComment in postComments"
                                         :key="postComment.id"
                                         v-bind="postComment"
-                                        @delete-com="deleteCom"
-                                        
-                                        />
+                                        @delete-com="deleteCom"/>
                                     </div> 
-                                   <div class="createC">
+                                    <div class="createC">
                                         <create-commentaire 
                                         :id="identifiantPost(id)"
                                         @create-comm="readPostComments"/>
                                     </div>  
                                 </div> 
-                                    </div>
-                        </div>
-                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+    </div>
 </template>
 
 <script>
@@ -316,8 +314,7 @@ export default {
             .catch(function(error){
                 console.log(error)
             })
-        },
-        
+        },       
         likePost : function(param){
             const self = this;
                 if(this.userIds.includes(this.$store.state.userId) == false){
@@ -338,7 +335,7 @@ export default {
                                 console.log(error)
                             })
                 }
-            },
+        },
         deleteLike : function(param){
                     const self = this;
                     console.log("delete")
@@ -364,32 +361,14 @@ export default {
                                 console.log(error)
                             })
                 
-            }, 
+        }, 
         getUserIds : function(){
             for (let i=0; i< this.likes.length; i++){
                 this.userIds.push(this.likes[i].userId)
                 console.log("userIds",this.userIds)}
                 return this.userIds
-            }
         }
-
-                            
-                        
-
-                        
-            
-            
-    
-       
-            
-                          
-                   
-                    
-                
-              
-                    
-        
-            
+    } 
 }
 </script>
 
@@ -403,7 +382,7 @@ body
 
 .card 
 {
-        border: solid 0.3px rgba(0, 0, 0, 0.2);
+    border: solid 0.3px rgba(0, 0, 0, 0.2);
 }
 
 .auteur
@@ -427,37 +406,44 @@ body
     margin-left: 5px;
     line-height: 0;
 }
+
 .date
 {
     font-size : 0.7em;
     color: #a09c9c;
 }
+
 .content
 {
     text-align: start;
 }
 
-.ellipsis {
+.ellipsis 
+{
     color: #a09c9c
 }
 
-hr {
+hr 
+{
     color: #a09c9c;
     margin-top: 4px;
     margin-bottom: 8px
 }
 
-.muted-color {
+.muted-color 
+{
     color: #a09c9c;
     font-size: 13px
 }
 
-.ellipsis i {
+.ellipsis i 
+{
     margin-top: 3px;
     cursor: pointer
 }
 
-.rounded-image {
+.rounded-image 
+{
     border-radius: 50% !important;
     display: flex;
     justify-content: center;
@@ -466,7 +452,8 @@ hr {
     width: 50px
 }
 
-.name {
+.name 
+{
     font-weight: bold;
 }
 
@@ -482,7 +469,8 @@ hr {
     border: none
 }
 
-.comment-input {
+.comment-input 
+{
     position: relative
 }
 
@@ -501,7 +489,8 @@ hr {
     margin-left: 90%;
 }
 
-.form-control:focus {
+.form-control:focus 
+{
     background-color: #fff;
     outline: 0;
     box-shadow: none;
@@ -672,5 +661,4 @@ hr {
   }
 
 }
-
 </style>

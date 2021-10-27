@@ -22,9 +22,7 @@ const routes = [
     name: 'Forum',
     //props: true,
     component: Forum,
-}
-  
-]
+}]
 
 const router = new VueRouter({
   mode: 'history',

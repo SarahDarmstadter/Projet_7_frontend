@@ -1,17 +1,16 @@
 <template>
-<div class="connexion" id="connexion">
-    <header>  
+    <div class="connexion" id="connexion">
+        <header>  
             <nav class="navbar navbar-expand-md ">
             <!-- Brand -->
-            <a class="navbar-brand" href="#"><img src='../assets/img/icon-left-font-monochrome-white.svg' alt='logo groupomania' class="logo" ></a>
+                <a class="navbar-brand" href="#"><img src='../assets/img/icon-left-font-monochrome-white.svg' alt='logo groupomania' class="logo" ></a>
             <!-- Toggler/collapsibe Button -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" v-on:click="dropdown" data-target="#collapsibleNavbar">
-                <span class="navbar-toggler-icon"></span>
-                <span class="navbar-toggler-icon"></span>
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" v-on:click="dropdown" data-target="#collapsibleNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             <!-- Navbar links -->
-            
                 <div class="collapse navbar-collapse" id="collapsibleNavbar">
                     <ul class="navbar-nav">
                         <li class="nav-item">
@@ -27,51 +26,45 @@
                     <a class="dropdown-link" href="#" @click="switchToLogin()">Connexion</a>
                     <a class="dropdown-link" href="#" @click="switchToCreateAccount()">Inscription</a>
                 </div>
-                
         </header>
         <div class="container-fluid">
-                        <h1>Bienvenue sur le forum interne Groupomania !</h1>
-
+            <h1>Bienvenue sur le forum interne Groupomania !</h1>
         <div class="row row-sign-in">
             <div class="col-lg-5 col-md-7 col-sm-10">
-        <form>
-            <h2 class="form_title" v-if= "mode =='login'"> Connexion</h2>
-            <h2 class="form_title" v-else>Inscription</h2>
-            <p v-if= "mode =='login'"> Vous n'avez pas encore de compte ? <a href="#" class="card_action" @click="switchToCreateAccount()">Créer un compte</a></p>
-            <p v-else> Vous avez déjà un compte ? <a href="#" class="card_action" @click="switchToLogin()">Connectez-vous</a></p>
-
-            <div class="identite" v-if= "mode == 'create'">
-            <div class="form-group">
-                <input v-model="lastName" type="text" class="form-control" placeholder="Nom" required/>
-            </div>
-            <div class="form-group">
-                <input v-model="firstName" type="text" class="form-control" placeholder="Prénom" required />
-            </div>
-            </div>
-            <div class="form-group" v-if= "mode =='create'">
-                <input v-model="userName" type="text" class="form-control" placeholder="Username" required />
-            </div>
-            <div class="form-group">
-                <input v-model="email" type="email" class="form-control" placeholder="Email" required />
-                <p class="form-row" v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
-            </div>
-            <div class="form-group form-group--password">  
-            <b-input v-if= "mode== 'login'" v-on:keyup.enter="connexion()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
-            <b-input v-else v-on:keyup.enter="createAccount()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
-    
-                <div @click="switchEye()" class="icon-eye">
-                    <b-icon  v-if= "passwordVisibility == 'hidden'" icon="eye" class="eye text-muted"></b-icon>  
-                    <b-icon  v-else icon="eye-slash" class="eye-slash text-muted"></b-icon>
+                <h2 class="form_title" v-if= "mode =='login'"> Connexion</h2>
+                <h2 class="form_title" v-else>Inscription</h2>
+                <p v-if= "mode =='login'"> Vous n'avez pas encore de compte ? <a href="#" class="card_action" @click="switchToCreateAccount()">Créer un compte</a></p>
+                <p v-else> Vous avez déjà un compte ? <a href="#" class="card_action" @click="switchToLogin()">Connectez-vous</a></p>
+                <div class="identite" v-if= "mode == 'create'">
+                    <div class="form-group">
+                        <input v-model="lastName" type="text" class="form-control" placeholder="Nom" required/>
+                    </div>
+                    <div class="form-group">
+                        <input v-model="firstName" type="text" class="form-control" placeholder="Prénom" required />
+                    </div>
                 </div>
-            </div> 
-            <p class="format_password" v-if= "mode =='create'">Votre mot de passe doit contenir entre 8 et 15 caractères, au moins une majuscule et un caractère spécial.</p>
-            <div class="form-row" v-if= "mode== 'login' && status== 'erreur_login'"> Adresse mail et/ou mot de passe invalide</div>   
-            <button @click="connexion()" type="button" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
-            <button @click="createAccount()" type="button" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
-        </form>
+                <div class="form-group" v-if= "mode =='create'">
+                    <input v-model="userName" type="text" class="form-control" placeholder="Username" required />
+                </div>
+                <div class="form-group">
+                    <input v-model="email" type="email" class="form-control" placeholder="Email" required />
+                    <p class="form-row" v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
+                </div>
+                <div class="form-group form-group--password">  
+                    <b-input v-if= "mode== 'login'" v-on:keyup.enter="connexion()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
+                    <b-input v-else v-on:keyup.enter="createAccount()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
+                    <div @click="switchEye()" class="icon-eye">
+                        <b-icon  v-if= "passwordVisibility == 'hidden'" icon="eye" class="eye text-muted"></b-icon>  
+                        <b-icon  v-else icon="eye-slash" class="eye-slash text-muted"></b-icon>
+                    </div>
+                </div> 
+                    <p class="format_password" v-if= "mode =='create'">Votre mot de passe doit contenir entre 8 et 15 caractères, au moins une majuscule et un caractère spécial.</p>
+                    <div class="form-row" v-if= "mode== 'login' && status== 'erreur_login'"> Adresse mail et/ou mot de passe invalide</div>   
+                    <button @click="connexion()" type="button" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
+                    <button @click="createAccount()" type="button" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
+                </div>
+            </div>
         </div>
-        </div>
-    </div>
    </div> 
 </template>
 
@@ -101,9 +94,9 @@ export default {
     computed : {
         validPassword : function (){
             const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,15})$/gm;
-            if ( this.mode =='create' && this.password.match(regex) ) {
+            if (this.mode =='create' && this.password.match(regex) ) {
                 return true;
-            } else {
+            }else {
                 return false
             }
         },
@@ -120,8 +113,7 @@ export default {
         dropdown : function(){
             const drop = document.getElementById("dropdown");
             drop.classList.toggle("visible");
-        },
-        
+        }, 
         switchToLogin : function (){
             return this.mode ='login';
         },
@@ -156,8 +148,7 @@ export default {
                         self.redirectionCreation()
                     } else {
                         self.$store.dispatch("setStatus", "")
-                    }
-                    
+                    }  
                 })
                 .catch(function(error){
                     console.log(error)
@@ -166,7 +157,6 @@ export default {
                 throw "veuillez remplir tous les champs"
             }
         },
-
         connexion : function(){
            const self = this;
                 axios.post('http://localhost:3000/api/auth/login', {
@@ -183,8 +173,6 @@ export default {
                 .catch(function(error){
                     console.log(error)
                     self.$store.dispatch("setStatus", "erreur_login")
-                    console.log('STATUS : ', self.$store.state.status)
-
                 })
             .then(function(){
                 self.redirectionConnexion()
@@ -193,23 +181,20 @@ export default {
                 console.log(error)
             }) 
         },
-
         redirectionConnexion : function() {
             if(this.$store.state.token !== ""){
                 this.$router.push({path : `/forum`})
-        
            }else{
                     throw "Vous n'etes pas connecté et/ou autorisés"
                 }
-         },
-         redirectionCreation : function() {
+        },
+        redirectionCreation : function() {
             if(this.$store.state.token !==""){
                 this.$router.push({path : `/profil/${this.$store.state.userId}`})
            }else{
                     throw "Vous n'etes pas connecté et/ou autorisés"
                 }
          },
-       
         switchEye : function(){
             const passwordInput = document.getElementById("password");
             if( this.passwordVisibility == 'hidden') {
@@ -224,7 +209,6 @@ export default {
             }
         }
     }
-
 }
 </script>
 
@@ -252,7 +236,8 @@ export default {
     width: 90%;
   }
 
-  .identite .form-group{
+  .identite .form-group
+  {
     width: 48%;
   }
 
@@ -261,13 +246,15 @@ export default {
     font-size: 1rem;
   }
 
-  .form-group--password {
+  .form-group--password 
+  {
     display: flex;
     justify-content: flex-end;
     align-items: center;
   }
   
-  .vertical-center {
+  .vertical-center 
+  {
     display: flex;
     text-align: left;
     justify-content: center;
@@ -275,19 +262,22 @@ export default {
   }
   
   
-  .vertical-center .form-control:focus {
+  .vertical-center .form-control:focus 
+  {
     border-color: red;
     box-shadow: none;
   }
   
-  .vertical-center h3 {
+  .vertical-center h3 
+  {
     text-align: center;
     margin: 0;
     line-height: 1;
     padding-bottom: 20px;
   }
   
-  label {
+  label 
+  {
     font-weight: 500;
     margin: 3px;
   }
@@ -297,7 +287,6 @@ export default {
     margin-bottom: 5px;
   }
 
-  
   .icon-eye
   {
     position: absolute;
