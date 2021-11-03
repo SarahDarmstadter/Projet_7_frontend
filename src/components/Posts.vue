@@ -5,9 +5,9 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="d-flex justify-content-between p-2 px-3">
-                                <div class="auteur">
+                                <div class="d-flex align-items-center">
                                     <img :src="user.imageUser" alt="photo de profil de l'auteur" class="auteur--img img-thumbnail img-fluid rounded-circle" style ="width: 50px">
-                                    <div class="aside">
+                                    <div class="aside d-flex flex-column align-items-start">
                                        <p @click="goProfil(user.id)" class="auteur--userName">{{ user.userName }} </p>
                                         <p class="date">Publié le {{ createdAt.slice(0,10).split('-').reverse().join('.') + ' à ' + createdAt.slice(11,16)}} </p>
                                     </div>
@@ -24,17 +24,20 @@
                             </div>
                             <div class="p-2">
                                 <p class="content">{{ content }}</p>
-                                <img :src="image" class="img-fluid">
+                            <img v-if="image !='null'" :id="identifiantPost(id)+'_image'" :src="image" class="img-fluid">
                             <div :id="identifiantPost(id)+'_postUpdate'" class="postUpdate overlay unvisible">
                                 <div></div>
-                                <div class="postUpdate_header">
+                                <div class="postUpdate_header  d-flex justify-content-between">
                                     <p>Modifier la publication</p>
                                     <button class="close" @click="closeUp()"><i class="fas fa-times"></i></button>
                                 </div>
-                                <div class="input_change">
-                                    <textarea v-on:keyup.enter="updatePayloadPost(id)" v-model="newPostcontent" class="post_update"></textarea>
-                                    <button @click="showUp()" class="btn-profil btn-image btn-modifier" >Image</button>
-                                    <div class="unvisible show-up" id="show-up">
+                                <div class="input_change d-flex flex-column">
+                                    <textarea v-on:keyup.enter="updatePayloadPost(id)" v-model="newPostcontent" class= "post_update"></textarea>
+                                    <div class="d-flex justify-content-between align-items-center deleteImg">
+                                        <p v-if="image !='null'" @click="deleteImgPost(id)"> Supprimer l'image </p>
+                                        <button @click="showUp()" class="btn-profil btn-image btn-modifier" >Image</button>
+                                    </div>
+                                    <div class="unvisible show-up" :id="identifiantPost(id)+'show-up'">
                                             <input @change="selectFile" type="file" class="form-control-file" id="file" accept=".jpg, .jpeg, .gif, .png">
                                             <button id="bouton_image" class="btn-profil btn-modifier btn-publier btn-danger" @click="updatePayloadPost(id)">Modifier</button>
                                     </div>
@@ -43,7 +46,7 @@
                                 <hr>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex flex-row icons d-flex align-items-center"> 
-                                        <p style="font-size: 13px" v-if="likes.length >= 1"> {{ likes.length }} </p>
+                                        <p style="font-size: 13px" v-if="likes.length >0"> {{ likes.length }} </p>
                                             <svg v-if="this.userIds.includes(this.$store.state.userId)==false" :id="identifiantPost(id) +'_like'" @click="likePost(id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart like" viewBox="0 0 16 16">
                                                 <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
                                             </svg>
@@ -51,7 +54,7 @@
                                                 <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                                             </svg> 
                                     </div>
-                                    <div class="d-flex flex-row muted-color comm_section">
+                                    <div class="d-flex flex-column muted-color comm_section">
                                        <p @click="displayComs(id)" v-if ="comments.length >1" class="commentaires" id="commentaires"> {{ comments.length }} Commentaires </p>
                                         <p @click="displayComs(id)" v-else-if =" 1> comments.length < 1 " class="commentaires" id="commentaires"> 1 Commentaire </p>
                                         <p @click="displayComs(id)" v-else class="commentaires" id="commentaires"> Commenter </p> 
@@ -85,8 +88,6 @@ import axios from 'axios'
 import { mapState} from 'vuex'
 import Commentaires from './Commentaires.vue'
 import createCommentaire from './createCommentaire.vue'
-
-
 
 export default {
     name: "Post", 
@@ -127,8 +128,8 @@ export default {
             newImagePost: null,
             postImg:"",
             newPostcontent : this.content, 
-            isAdmin : false, 
-            userIds:[this.id]
+            isAdmin : this.$store.state.isAdmin, 
+            userIds:[]
         }
     },
     computed: {
@@ -136,6 +137,7 @@ export default {
     },
     mounted(){
         console.log("mounted")
+        console.log("userIds qui ont liké", this.userIds)
             this.getUserIds()
     },
     methods: {
@@ -147,7 +149,9 @@ export default {
             this.$router.push({path : `/profil/${this.$store.state.identifiant}`})
         }, 
         showUp : function(){
-            const showUp = document.getElementById("show-up")
+            console.log("shjdvlhsgv")
+            const showUpId = this.postId + 'show-up'
+            const showUp = document.getElementById(showUpId)
             showUp.classList.toggle("unvisible")
         },
         showActions : function(){ 
@@ -184,7 +188,7 @@ export default {
                 console.log("postCoomments.id", this.postComments[i].id)
                 
                  if(this.postComments[i].id === param) {
-                    this.postComments.splice(i, 0)
+                    this.postComments.splice(i, 1)
                     }
                 this.$emit("other-change", true)
             }     
@@ -239,6 +243,43 @@ export default {
                 }  
               }      
         },
+        deleteImgPost : function(param){
+            const self = this;
+                this.newImagePost = null;
+            
+                const newData = {
+                    content : this.newPostcontent,
+                    postId : param
+                }
+                const fd = new FormData()
+                fd.append("image", this.newImagePost)
+                fd.append("postMessage", JSON.stringify(newData))
+            
+                axios.put(`http://localhost:3000/api/post/${param}/update`, 
+                fd, {headers:
+                        { 
+                        "Authorization" : `Bearer ${this.$store.state.token}`,
+                        "Content-Type": "multipart/form-data"
+                        }
+                    })
+                    .then(function(response){
+                        console.log(response)
+                        
+                        if(self.newImagePost == null) {
+                            const imgId = self.postId + '_image'
+                            const imgPost = document.getElementById(imgId)
+                            imgPost.style.display = "none"
+
+                            const idPostUpdate = self.postId + '_postUpdate'
+                            const postUpdate = document.getElementById(idPostUpdate)
+                            postUpdate.classList.add("unvisible")
+                            self.$emit('other-change', true)
+                        }
+                    })
+                    .catch(function(error){
+                        console.log(error)
+                    })
+        },
         updatePayloadPost : function(param){
             this.closeUp()
             const self= this;
@@ -271,7 +312,6 @@ export default {
                         console.log(error)
                 })
             }else if (this.newPostcontent !==""){
-                console.log("this.newPostContent", this.newPostcontent)
                 const postMessage = {
                     content : this.newPostcontent,
                     postId : param
@@ -385,23 +425,15 @@ body
     border: solid 0.3px rgba(0, 0, 0, 0.2);
 }
 
-.auteur
-{
-    display: flex;
-    align-items: center;
-}
-
 .auteur--userName 
 {
     font-weight: bold;
     font-size: 0.8em;
+    cursor:pointer;
 }
 
 .aside 
 {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
     margin-top: 15px;
     margin-left: 5px;
     line-height: 0;
@@ -440,16 +472,6 @@ hr
 {
     margin-top: 3px;
     cursor: pointer
-}
-
-.rounded-image 
-{
-    border-radius: 50% !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50px;
-    width: 50px
 }
 
 .name 
@@ -548,24 +570,16 @@ hr
     margin-bottom: 0;
 }
 
-.comm_section
-{
-    display: flex;
-    flex-direction: column;
-}
+
 
 .postUpdate_header
 {
-    display: flex;
-    justify-content: space-between;
     margin-right: 10px;
     border-bottom: 1.5px solid black;
 }
 
 .input_change
 {
-    display: flex;
-    flex-direction: column;
     padding:10px;
 }
 
@@ -573,7 +587,7 @@ hr
 {
     box-shadow: 2px 2px 10px 2px rgb(180, 176, 176);
     position: fixed;
-    top: 50%;
+    top: 35%;
     left: 25%;
     width: 50%;
     z-index: 2;
@@ -633,6 +647,11 @@ hr
     margin-left: 5px;
     margin-bottom: 14px;
     width: 12px;
+}
+
+.deleteImg:hover 
+{
+    font-weight: bold;
 }
 
 @media screen and (max-width: 600px) {

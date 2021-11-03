@@ -131,6 +131,7 @@ export default {
                         //self.$router.push('/forum')
                         self.title =""
                         self.content =""
+                        self.image = null
                     })
                     .catch(function(error){
                         console.log(error)
@@ -176,7 +177,6 @@ export default {
              this.$router.push({path : `/profil/${this.$store.state.userId}`})
         },
         logOut : function(){
-            sessionStorage.clear();
             this.$store.commit('logOut')
             this.$router.push({path : `/`})
         }

@@ -5,7 +5,7 @@
             <!-- Brand -->
                 <a class="navbar-brand" href="#"><img src='../assets/img/icon-left-font-monochrome-white.svg' alt='logo groupomania' class="logo" ></a>
             <!-- Toggler/collapsibe Button -->
-                <button class="navbar-toggler" type="button" data-toggle="collapse" v-on:click="dropdown" data-target="#collapsibleNavbar">
+                <button class="navbar-toggler burger" type="button" data-toggle="collapse" v-on:click="dropdown" data-target="#collapsibleNavbar">
                     <span class="navbar-toggler-icon"></span>
                     <span class="navbar-toggler-icon"></span>
                     <span class="navbar-toggler-icon"></span>
@@ -31,37 +31,39 @@
             <h1>Bienvenue sur le forum interne Groupomania !</h1>
         <div class="row row-sign-in">
             <div class="col-lg-5 col-md-7 col-sm-10">
-                <h2 class="form_title" v-if= "mode =='login'"> Connexion</h2>
-                <h2 class="form_title" v-else>Inscription</h2>
-                <p v-if= "mode =='login'"> Vous n'avez pas encore de compte ? <a href="#" class="card_action" @click="switchToCreateAccount()">Créer un compte</a></p>
-                <p v-else> Vous avez déjà un compte ? <a href="#" class="card_action" @click="switchToLogin()">Connectez-vous</a></p>
-                <div class="identite" v-if= "mode == 'create'">
-                    <div class="form-group">
-                        <input v-model="lastName" type="text" class="form-control" placeholder="Nom" required/>
+                <form class="d-flex flex-column align-items-center">
+                    <h2  v-if= "mode =='login'"> Connexion</h2>
+                    <h2  v-else>Inscription</h2>
+                    <p v-if= "mode =='login'"> Vous n'avez pas encore de compte ? <a href="#" class="card_action" @click="switchToCreateAccount()">Créer un compte</a></p>
+                    <p v-else> Vous avez déjà un compte ? <a href="#" class="card_action" @click="switchToLogin()">Connectez-vous</a></p>
+                    <div class="identite d-flex justify-content-between" v-if= "mode == 'create'">
+                        <div class="form-group">
+                            <input v-model="lastName" type="text" class="form-control" placeholder="Nom" required/>
+                        </div>
+                        <div class="form-group">
+                            <input v-model="firstName" type="text" class="form-control" placeholder="Prénom" required />
+                        </div>
+                    </div>
+                    <div class="form-group" v-if= "mode =='create'">
+                        <input v-model="userName" type="text" class="form-control" placeholder="Username" required />
                     </div>
                     <div class="form-group">
-                        <input v-model="firstName" type="text" class="form-control" placeholder="Prénom" required />
+                        <input v-model="email" type="email" class="form-control" placeholder="Email" required />
+                        <p v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
                     </div>
-                </div>
-                <div class="form-group" v-if= "mode =='create'">
-                    <input v-model="userName" type="text" class="form-control" placeholder="Username" required />
-                </div>
-                <div class="form-group">
-                    <input v-model="email" type="email" class="form-control" placeholder="Email" required />
-                    <p class="form-row" v-if= "mode== 'create' && status== 'erreur_creation'"> Adresse mail déjà utilisée </p>   
-                </div>
-                <div class="form-group form-group--password">  
-                    <b-input v-if= "mode== 'login'" v-on:keyup.enter="connexion()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
-                    <b-input v-else v-on:keyup.enter="createAccount()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
-                    <div @click="switchEye()" class="icon-eye">
-                        <b-icon  v-if= "passwordVisibility == 'hidden'" icon="eye" class="eye text-muted"></b-icon>  
-                        <b-icon  v-else icon="eye-slash" class="eye-slash text-muted"></b-icon>
-                    </div>
-                </div> 
-                    <p class="format_password" v-if= "mode =='create'">Votre mot de passe doit contenir entre 8 et 15 caractères, au moins une majuscule et un caractère spécial.</p>
-                    <div class="form-row" v-if= "mode== 'login' && status== 'erreur_login'"> Adresse mail et/ou mot de passe invalide</div>   
-                    <button @click="connexion()" type="button" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
-                    <button @click="createAccount()" type="button" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
+                    <div class="form-group d-flex justify-content-end align-items-center">  
+                        <b-input v-if= "mode== 'login'" v-on:keyup.enter="connexion()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
+                        <b-input v-else v-on:keyup.enter="createAccount()" v-model= "password" id="password" type="password" class="form-control" placeholder="Mot de passe" required/>
+                        <div @click="switchEye()" class="icon-eye">
+                            <b-icon  v-if= "passwordVisibility == 'hidden'" icon="eye" class="eye text-muted"></b-icon>  
+                            <b-icon  v-else icon="eye-slash" class="eye-slash text-muted"></b-icon>
+                        </div>
+                    </div> 
+                        <p class="condition_p" v-if= "mode =='create'">Votre mot de passe doit contenir entre 8 et 15 caractères, au moins une majuscule et un caractère spécial.</p>
+                        <div v-if= "mode== 'login' && status== 'erreur_login'"> Adresse mail et/ou mot de passe invalide</div>   
+                        <button @click="connexion()" type="button" class="btn btn-signin btn-lg btn-block" v-if= "mode =='login'" :class="{'disabled' : !emptyFields}" >Connexion</button>
+                        <button @click="createAccount()" type="button" class="btn btn-signin btn-lg btn-block" :class="{'disabled' : !validPassword}" v-else>Inscription</button>
+                </form>
                 </div>
             </div>
         </div>
@@ -76,7 +78,6 @@
 import { mapState } from 'vuex'
 import axios from 'axios'
 //import router from '../router'
-
 
 export default {
     name: "Connexion",
@@ -136,19 +137,17 @@ export default {
                         self.$store.dispatch('token', response.data.token)
                         self.$store.dispatch("userId", response.data.userId)
                         self.$store.dispatch('identifiant', response.data.userId)
+                        self.$store.dispatch('isAdmin', response.data.isAdmin)
                         self.$store.dispatch("setStatus", "")
-
-                        })
+                        self.redirection()
+                    })
                     .catch(function(error){
                         console.log(error)
                         self.$store.dispatch("setStatus", "erreur_creation")
                     })
                 .then(function(){
-                    if(self.$store.state.status !== ""){
-                        self.redirectionCreation()
-                    } else {
-                        self.$store.dispatch("setStatus", "")
-                    }  
+                     console.log("kjzqvhqzrK")
+                     self.$store.dispatch("setStatus", "")
                 })
                 .catch(function(error){
                     console.log(error)
@@ -168,6 +167,7 @@ export default {
                     self.$store.dispatch('token', response.data.token)
                     self.$store.dispatch("userId", response.data.userId)
                     self.$store.dispatch('identifiant', response.data.userId)
+                    self.$store.dispatch('isAdmin', response.data.isAdmin)
                     self.$store.dispatch("setStatus", "")
                 })
                 .catch(function(error){
@@ -175,26 +175,22 @@ export default {
                     self.$store.dispatch("setStatus", "erreur_login")
                 })
             .then(function(){
-                self.redirectionConnexion()
+                self.redirection()
+                self.$store.dispatch("setStatus", "")
+
             })
             .catch(function(error){
                 console.log(error)
             }) 
         },
-        redirectionConnexion : function() {
+        redirection : function() {
             if(this.$store.state.token !== ""){
                 this.$router.push({path : `/forum`})
            }else{
                     throw "Vous n'etes pas connecté et/ou autorisés"
                 }
         },
-        redirectionCreation : function() {
-            if(this.$store.state.token !==""){
-                this.$router.push({path : `/profil/${this.$store.state.userId}`})
-           }else{
-                    throw "Vous n'etes pas connecté et/ou autorisés"
-                }
-         },
+       
         switchEye : function(){
             const passwordInput = document.getElementById("password");
             if( this.passwordVisibility == 'hidden') {
@@ -213,26 +209,28 @@ export default {
 </script>
 
 <style scoped>
-    form
+
+  h1
   {
-    display: flex;
+     text-align : center;   
+  }
+
+  form
+  {    
     padding: 6%;
     background: #dc3545;
     border-radius: 34px;
     color: white;
     margin-bottom: 10%;
-    flex-direction: column;
-    align-items: center;
   }
 
-  .form-group{
+  .form-group
+  {
     width: 90%;
   }
 
   .identite
   {
-    display: flex;
-    justify-content: space-between;
     width: 90%;
   }
 
@@ -245,41 +243,17 @@ export default {
   {
     font-size: 1rem;
   }
-
-  .form-group--password 
-  {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-  
-  .vertical-center 
-  {
-    display: flex;
-    text-align: left;
-    justify-content: center;
-    flex-direction: column;    
-  }
-  
-  
-  .vertical-center .form-control:focus 
-  {
-    border-color: red;
-    box-shadow: none;
-  }
-  
-  .vertical-center h3 
-  {
-    text-align: center;
-    margin: 0;
-    line-height: 1;
-    padding-bottom: 20px;
-  }
   
   label 
   {
     font-weight: 500;
     margin: 3px;
+  }
+
+  .condition_p 
+  {
+      text-align: justify;
+      width: 90%;
   }
 
   input 

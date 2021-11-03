@@ -13,12 +13,11 @@ export default new Vuex.Store({
             userId:"",
             isAdmin : false,
             identifiant:"",
-            postId:"", 
             logOut: false
         }
     },
     plugins: [createPersistedState({
-        storage: window.localStorage,
+        storage: window.sessionStorage,
     })],
     mutations: {
         setStatus : function(state, status) {
@@ -32,14 +31,15 @@ export default new Vuex.Store({
         userId : function(state, userId) {
             state.userId = userId
         },
-        isAdmin : function(state){
-            state.isAdmin = true
+        isAdmin : function(state, response){
+            state.isAdmin = response
         },
         identifiant : function(state, identifiant){
             state.identifiant = identifiant
         }, 
         logOut : function(state, log){
            log = true
+           sessionStorage.clear()
             state.logOut = log
             state.identifiant =""
             state.userId =""
@@ -60,14 +60,13 @@ export default new Vuex.Store({
         },
         logOut : function({commit}, log){
             localStorage.clear()
-            commit("logOut", log)
-           
+            commit("logOut", log)  
         }, 
-        isAdmin : function({commit}){
-            commit("isAdmin", true)
+        isAdmin : function({commit}, response){
+            commit("isAdmin", response)
         },
         identifiant : function({commit},identifiant){
             commit("identifiant", identifiant)
-        } 
+        }, 
     }
 })

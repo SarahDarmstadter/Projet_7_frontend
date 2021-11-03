@@ -1,8 +1,7 @@
 <template>
     <div id="forum">
         <CreatePost @create-post="changePublication" /> 
-        <p  class="titre_page_forum" v-if="publications.length < 1"> Il n'y a pas encore de publication. Soyez le premier à vous exprimer !</p>
-        <Posts  v-for="publication in publications" 
+-        <Posts  v-for="publication in publications" 
             :key="publication.id" 
             v-bind="publication" 
             @delete-post="changePublication"

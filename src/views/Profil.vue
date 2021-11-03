@@ -14,7 +14,7 @@
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <button class="nav-link btn btn-outline-danger"><a class="nav-link" href="#" @click="flute()">Déconnexion</a></button>
+                                <button class="nav-link btn btn-outline-danger"><a class="nav-link" href="#" @click="logOut()">Déconnexion</a></button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link btn btn-outline-danger">
@@ -87,13 +87,14 @@ export default {
                 userName :"",
                 email : "",
                 file : "",
-                isAdmin : false,
+                isAdmin : this.$store.state.isAdmin,
                 newFile : null,
                 userId : this.$store.state.userId,
                 identifiant : this.$store.state.identifiant
             }      
     },
     created (){
+        console.log(this.$store.state.isAdmin)
         const self = this;
             if(this.$store.state.token !=="") {
                 let identifiant = this.$store.state.identifiant;
@@ -107,12 +108,6 @@ export default {
                     self.userName = response.data.data.userName;
                     self.email = response.data.data.email;
                     self.file = response.data.data.imageUser;
-                    self.isAdmin = response.data.data.isAdmin
-                        if(self.isAdmin === true){
-                            self.$store.dispatch("isAdmin", true)
-                        }else{
-                            throw "Vous n'êtes pas administrateur"
-                        }
                 })
                 .catch(function(error){
                     console.log(error)
@@ -183,30 +178,29 @@ export default {
                     })
         },
         deleteAccount : function(){
-            if(this.$store.state.token !=="") {
-                    axios.delete('http://localhost:3000/api/auth/suppression-profile', 
+            const self =this;
+            
+                    axios.delete(`http://localhost:3000/api/auth/${this.$store.state.identifiant}/suppression-profile`, 
                     {headers : {"Authorization" : `Bearer ${this.$store.state.token}`}
                     })
                         .then(function(response){
                             console.log("response axios.delete", response)
+                            if(self.$store.state.userId == self.$store.state.identifiant){
+                                router.push('/')
+                                self.$store.dispatch("logOut", true)     
+
+                            }else {
+                                router.push('/forum')
+                            }
+                           
                         })
                         .catch(function(error){
                             console.log(error)
                         })
-                .then(function(){
-                    localStorage.clear()
-                    sessionStorage.clear()
-                    router.push('/')
-                })
-                .catch(function(error){
-                    console.log(error)
-                })
-           }else {
-                throw "Vous n'êtes pas autorisé.e à supprimer le profil"
-           }     
+            
         },
         logOut : function(){
-            localStorage.clear()
+            this.$store.dispatch("logOut", true)            
             router.push('/')
         }
     }
@@ -319,12 +313,17 @@ export default {
 
     .photo-de-profil
     {
-        width: 50%;
+        width: 60%;
     }
 
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 800px) {
         
         .photo-de-profil
+        {
+            width: 100%;
+        }
+
+        .infos 
         {
             width: 100%;
         }
