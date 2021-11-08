@@ -63,7 +63,7 @@
                 <p class="info-profil"> {{ lastName }} </p>
                 <p class="info-profil"> {{ firstName }} </p>
                 <p class="info-profil"> {{ email }} </p>
-                <button v-if="userId == identifiant || isAdmin == true"  class="suppression btn-profil" @click="deleteAccount()">Supprimer mon compte</button>
+                <button v-if="userId == identifiant || isAdmin == true"  class="suppression btn-profil" @click="deleteAccount()">Supprimer le compte</button>
                 </div>
             </div> 
     </div>  

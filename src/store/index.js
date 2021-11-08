@@ -17,14 +17,14 @@ export default new Vuex.Store({
         }
     },
     plugins: [createPersistedState({
-        storage: window.sessionStorage,
+        storage: window.localStorage,
     })],
     mutations: {
         setStatus : function(state, status) {
             state.status = status
         },
         token : function(state, token) {
-            sessionStorage.setItem('token', JSON.stringify(token))
+            localStorage.setItem('token', JSON.stringify(token))
             state.token = token
             console.log("state.token", state.token)
         }, 
@@ -39,7 +39,7 @@ export default new Vuex.Store({
         }, 
         logOut : function(state, log){
            log = true
-           sessionStorage.clear()
+           localStorage.clear()
             state.logOut = log
             state.identifiant =""
             state.userId =""
